@@ -118,7 +118,7 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree_Node   Reference to the newly created root node
     * @access public
     */
-    function &addRoot($name, $content = '', $attributes = array(), $lineno)
+    function &addRoot($name, $content = '', $attributes = array(), $lineno = null)
     {
         $this->root = new XML_Tree_Node($name, $content, $attributes, $lineno);
         return $this->root;

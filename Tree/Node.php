@@ -64,7 +64,7 @@ class XML_Tree_Node {
     * @param  string    content         Node content (text)
     * @param  array     attributes      Attribute-hash for the node
     */
-    function XML_Tree_Node($name, $content = '', $attributes = array(), $lineno)
+    function XML_Tree_Node($name, $content = '', $attributes = array(), $lineno = null)
     {
         $this->name = $name;
         $this->setContent($content);
@@ -85,7 +85,7 @@ class XML_Tree_Node {
     * @return object  reference to new child node
     * @access public
     */
-    function &addChild($child, $content = '', $attributes = array())
+    function &addChild($child, $content = '', $attributes = array(), $lineno = null)
     {
         $index = sizeof($this->children);
 
@@ -98,7 +98,7 @@ class XML_Tree_Node {
                 $this->children[$index] = $child->root->getElement();
             }
         } else {
-            $this->children[$index] = new XML_Tree_Node($child, $content, $attributes);
+            $this->children[$index] = new XML_Tree_Node($child, $content, $attributes, $lineno);
         }
 
         return $this->children[$index];
