@@ -55,5 +55,8 @@ Others:
         </dir>
       </dir>
     </filelist>
+    <deps>
+        <dep type="pkg" rel="has">XML_Parser</dep>
+    </deps>
   </release>
 </package>
