@@ -22,104 +22,6 @@
 //
 
 /**
-* PEAR::XML_Tree
-*
-* @author  Sebastian Bergmann <sb@sebastian-bergmann.de>
-* @package XML_Tree
-* @version 1.0  15-Aug-2001
-*/
-class XML_Tree {
-    /**
-    * Namespace
-    *
-    * @var  array
-    */
-    var $namespace;
-
-    /**
-    * Root
-    *
-    * @var  object
-    */
-    var $root;
-
-    /**
-    * XML Version
-    *
-    * @var  string
-    */
-    var $version;
-
-    /**
-    * Constructor
-    *
-    * @param  string  XML Version
-    */
-    function XML_Tree($version = '1.0') {
-        $this->version = $version;
-    }
-
-    /**
-    * Get a copy of this tree.
-    *
-    * @return  object XML_Tree
-    */
-    function copy() {
-        return $this;
-    }
-
-    /**
-    * Add root node.
-    *
-    * @param  string  name of root element
-    * @return object  reference to root node
-    */
-    function &add_root($name) {        
-        $this->root = new XML_Tree_Node($name);
-        return $this->root;
-    }
-
-    /**
-    * Get text representation of XML tree.
-    *
-    * @return  string  XML
-    */
-    function &get() {
-        $out = '<?xml version="' . $this->version . "\"?>\n";
-        $out .= $this->root->get();
-
-        return $out;
-    }
-
-    /**
-    * Print text representation of XML tree.
-    */
-    function dump() {
-        echo $this->get();
-    }
-
-    /**
-    * Register a namespace.
-    *
-    * @param  string  namespace
-    * @param  string  path
-    */
-    function register_name($name, $path) {
-        $this->namespace[$name] = $path;
-    }
-
-    /**
-    * Get current namespace.
-    *
-    * @param  string  namespace
-    * @return string
-    */
-    function &get_name($name) {
-        return $this->root->get_element($this->namespace[$name]);
-    }
-}
-
-/**
 * PEAR::XML_Tree_Node
 *
 * @author  Sebastian Bergmann <sb@sebastian-bergmann.de>
@@ -165,7 +67,7 @@ class XML_Tree_Node {
     function XML_Tree_Node($name, $content = '', $attributes = array()) {
         $this->attributes = $attributes;
         $this->children   = array();
-        $this->content    = xml_entities($content);
+        $this->content    = $this->_xml_entities($content);
         $this->name       = strtolower($name);
     }
 
@@ -266,33 +168,40 @@ class XML_Tree_Node {
 
         return $out;
     }
-}
 
-function &xml_entities(&$xml) {
-    $xml = str_replace(array('ü', 'Ü', 'ö',
-                             'Ö', 'ä', 'Ä',
-                             'ß'
-                            ),
-                       array('&#252;', '&#220;', '&#246;',
-                             '&#214;', '&#228;', '&#196;',
-                             '&#223;'
-                            ),
-                       $xml
-                      );
+    /**
+    * Escape XML entities.
+    *
+    * @param   string  xml
+    * @return  string  xml
+    * @access  private
+    */
+    function _xml_entities($xml) {
+        $xml = str_replace(array('ü', 'Ü', 'ö',
+                                 'Ö', 'ä', 'Ä',
+                                 'ß'
+                                ),
+                           array('&#252;', '&#220;', '&#246;',
+                                 '&#214;', '&#228;', '&#196;',
+                                 '&#223;'
+                                ),
+                           $xml
+                          );
 
-    $xml = preg_replace(array("/\&([a-z\d\#]+)\;/i",
-                              "/\&/",
-                              "/\#\|\|([a-z\d\#]+)\|\|\#/i",
-                              "/([^a-zA-Z\d\s\<\>\&\;\.\:\=\"\-\/\%\?\!\'\(\)\[\]\{\}\$\#\+\,\@_])/e"
-                             ),
-                        array("#||\\1||#",
-                              "&amp;",
-                              "&\\1;",
-                              "'&#'.ord('\\1').';'"
-                             ),
-                        $xml
-                       );
+        $xml = preg_replace(array("/\&([a-z\d\#]+)\;/i",
+                                  "/\&/",
+                                  "/\#\|\|([a-z\d\#]+)\|\|\#/i",
+                                  "/([^a-zA-Z\d\s\<\>\&\;\.\:\=\"\-\/\%\?\!\'\(\)\[\]\{\}\$\#\+\,\@_])/e"
+                                 ),
+                            array("#||\\1||#",
+                                  "&amp;",
+                                  "&\\1;",
+                                  "'&#'.ord('\\1').';'"
+                                 ),
+                            $xml
+                           );
 
-    return $xml;
+        return $xml;
+    }
 }
 ?>
