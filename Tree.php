@@ -193,7 +193,6 @@ class XML_Tree extends XML_Parser
             return $err;
         }
         $this->cdata = null;
-        $this->store_cdata = false;
         $err = $this->parse();
         if (PEAR::isError($err)) {
             return $err;
@@ -206,7 +205,6 @@ class XML_Tree extends XML_Parser
         $this->folding = false;
         $this->XML_Parser(null, 'event');
         $this->cdata = null;
-        $this->store_cdata = false;
         $err = $this->parseString($str);
         if (PEAR::isError($err)) {
             return $err;
@@ -223,19 +221,24 @@ class XML_Tree extends XML_Parser
     *
     * @access private
     */
-    function StartHandler($xp, $elem, &$attribs)
+    function startHandler($xp, $elem, &$attribs)
     {
         // root elem
         if (!isset($this->i)) {
             $this->obj1 =& $this->add_root($elem, null, $attribs);
             $this->i = 2;
         } else {
+            // mixed contents
+            if (!empty($this->cdata)) {
+                $parent_id = 'obj' . ($this->i - 1);
+                $parent    =& $this->$parent_id;
+                $parent->children[] = &new XML_Tree_Node(null, $this->cdata);
+            }
             $obj_id = 'obj' . $this->i++;
-            $this->$obj_id =& new XML_Tree_Node($elem, null, $attribs);
+            $this->$obj_id = &new XML_Tree_Node($elem, null, $attribs);
         }
         $this->cdata = null;
-        $this->store_cdata = true;
-        return NULL;
+        return null;
     }
 
     /**
@@ -246,22 +249,28 @@ class XML_Tree extends XML_Parser
     *
     * @access private
     */
-    function EndHandler($xp, $elem)
+    function endHandler($xp, $elem)
     {
         $this->i--;
         if ($this->i > 1) {
             $obj_id = 'obj' . $this->i;
             // recover the node created in StartHandler
             $node   =& $this->$obj_id;
-            $node->set_content($this->cdata);
+            // mixed contents
+            if (count($node->children) > 0) {
+                if (trim($this->cdata)) {
+                    $node->children[] = &new XML_Tree_Node(null, $this->cdata);
+                }
+            } else {
+                $node->set_content($this->cdata);
+            }
             $parent_id = 'obj' . ($this->i - 1);
             $parent    =& $this->$parent_id;
             // attach the node to its parent node children array
             $parent->children[] = $node;
         }
         $this->cdata = null;
-        $this->store_cdata = false;
-        return NULL;
+        return null;
     }
 
     /*
@@ -274,8 +283,7 @@ class XML_Tree extends XML_Parser
     */
     function cdataHandler($xp, $data)
     {
-        // only store data inside tags
-        if ($this->store_cdata) {
+        if (trim($data)) {
             $this->cdata .= $data;
         }
     }
