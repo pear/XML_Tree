@@ -233,6 +233,7 @@ class XML_Tree extends XML_Parser
             $obj_id = 'obj' . $this->i++;
             $this->$obj_id =& new XML_Tree_Node($elem, null, $attribs);
         }
+        $this->cdata = null;
         $this->store_cdata = true;
         return NULL;
     }
