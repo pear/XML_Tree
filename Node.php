@@ -26,7 +26,7 @@
 *
 * @author  Sebastian Bergmann <sb@sebastian-bergmann.de>
 * @package XML_Tree
-* @version 1.0  15-Aug-2001
+* @version 1.0  16-Aug-2001
 */
 class XML_Tree_Node {
     /**
@@ -98,6 +98,33 @@ class XML_Tree_Node {
     }
 
     /**
+    * Returns text representation of this node.
+    *
+    * @return  string  xml
+    */
+    function &get() {
+        $out = '<' . $this->name;
+
+        foreach ($this->attributes as $name => $value) {
+            $out .= ' ' . $name . '="' . $value . '"';
+        }
+
+        $out .= '>' . $this->content;
+
+        if (sizeof($this->children) > 0) {
+            $out .= "\n";
+
+            foreach ($this->children as $child) {
+                $out .= $child->get();
+            }
+        }
+
+        $out .= '</' . $this->name . ">\n";
+
+        return $out;
+    }
+
+    /**
     * Gets an attribute by its name.
     *
     * @param  string  name
@@ -140,33 +167,6 @@ class XML_Tree_Node {
     */
     function unset_attribute($name) {
         unset($this->attributes[strtolower($name)]);
-    }
-
-    /**
-    * Returns text representation of this node.
-    *
-    * @return  string  xml
-    */
-    function &get() {
-        $out = '<' . $this->name;
-
-        foreach ($this->attributes as $name => $value) {
-            $out .= ' ' . $name . '="' . $value . '"';
-        }
-
-        $out .= '>' . $this->content;
-
-        if (sizeof($this->children) > 0) {
-            $out .= "\n";
-
-            foreach ($this->children as $child) {
-                $out .= $child->get();
-            }
-        }
-
-        $out .= '</' . $this->name . ">\n";
-
-        return $out;
     }
 
     /**

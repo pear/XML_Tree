@@ -26,9 +26,24 @@ require_once 'XML/Tree/Node.php';
 /**
 * PEAR::XML_Tree
 *
+* Purpose
+*
+*    Allows for the building of XML data structures
+*    using a tree representation, without the need
+*    for an extension like DOMXML.
+*
+* Example
+*
+*    $tree  = new XML_Tree;
+*    $root =& $tree->add_root('root');
+*    $foo  =& $root->add_child('foo');
+*
+*    header('Content-Type: text/xml');
+*    $tree->dump();
+*
 * @author  Sebastian Bergmann <sb@sebastian-bergmann.de>
 * @package XML_Tree
-* @version 1.0  15-Aug-2001
+* @version 1.0  16-Aug-2001
 */
 class XML_Tree {
     /**
@@ -62,6 +77,17 @@ class XML_Tree {
     }
 
     /**
+    * Add root node.
+    *
+    * @param  string  name of root element
+    * @return object  reference to root node
+    */
+    function &add_root($name) {        
+        $this->root = new XML_Tree_Node($name);
+        return $this->root;
+    }
+
+    /**
     * Get a copy of this tree.
     *
     * @return  object XML_Tree
@@ -71,14 +97,10 @@ class XML_Tree {
     }
 
     /**
-    * Add root node.
-    *
-    * @param  string  name of root element
-    * @return object  reference to root node
+    * Print text representation of XML tree.
     */
-    function &add_root($name) {        
-        $this->root = new XML_Tree_Node($name);
-        return $this->root;
+    function dump() {
+        echo $this->get();
     }
 
     /**
@@ -94,10 +116,13 @@ class XML_Tree {
     }
 
     /**
-    * Print text representation of XML tree.
+    * Get current namespace.
+    *
+    * @param  string  namespace
+    * @return string
     */
-    function dump() {
-        echo $this->get();
+    function &get_name($name) {
+        return $this->root->get_element($this->namespace[$name]);
     }
 
     /**
@@ -108,16 +133,6 @@ class XML_Tree {
     */
     function register_name($name, $path) {
         $this->namespace[$name] = $path;
-    }
-
-    /**
-    * Get current namespace.
-    *
-    * @param  string  namespace
-    * @return string
-    */
-    function &get_name($name) {
-        return $this->root->get_element($this->namespace[$name]);
     }
 }
 ?>
