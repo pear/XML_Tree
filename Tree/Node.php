@@ -155,7 +155,7 @@ class XML_Tree_Node {
     * @deprecated
     */
     function &insert_child($path,$pos,&$child, $content = '', $attributes = array()) {
-        return $this->insertChild($path,$pos,&$child, $content, $attributes);
+        return $this->insertChild($path,$pos,$child, $content, $attributes);
     }
 
     /**
@@ -185,27 +185,39 @@ class XML_Tree_Node {
     function &get()
     {
         static $deep = -1;
+        static $do_ident = true;
         $deep++;
-        $ident = str_repeat('  ', $deep);
-        $out = $ident . '<' . $this->name;
-
-        foreach ($this->attributes as $name => $value) {
-            $out .= ' ' . $name . '="' . $value . '"';
-        }
-
-        $out .= '>' . $this->content;
-
-        if (sizeof($this->children) > 0) {
-            $out .= "\n";
-
-            foreach ($this->children as $child) {
-                $out .= $child->get();
+        if ($this->name !== null) {
+            $ident = str_repeat('  ', $deep);
+            if ($do_ident) {
+                $out = $ident . '<' . $this->name;
+            } else {
+                $out = '<' . $this->name;
             }
-        } else {
-            $ident = '';
-        }
+            foreach ($this->attributes as $name => $value) {
+                $out .= ' ' . $name . '="' . $value . '"';
+            }
 
-        $out .= $ident . '</' . $this->name . ">\n";
+            $out .= '>' . $this->content;
+
+            if (sizeof($this->children) > 0) {
+                $out .= "\n";
+                foreach ($this->children as $child) {
+                    $out .= $child->get();
+                }
+            } else {
+                $ident = '';
+            }
+            if ($do_ident) {
+                $out .= $ident . '</' . $this->name . ">\n";
+            } else {
+                $out .= '</' . $this->name . '>';
+            }
+            $do_ident = true;
+        } else {
+            $out = $this->content;
+            $do_ident = false;
+        }
         $deep--;
         return $out;
     }
@@ -294,7 +306,7 @@ class XML_Tree_Node {
 
     function set_content(&$content)
     {
-        return $this->setContent(&$content);
+        return $this->setContent($content);
     }
 
     /**
