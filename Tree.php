@@ -234,6 +234,7 @@ class XML_Tree extends XML_Parser
     */
     function &getTreeFromString($str)
     {
+        $this->i = null;
         $this->folding = false;
         $this->XML_Parser(null, 'event');
         $this->cdata = null;
@@ -293,7 +294,7 @@ class XML_Tree extends XML_Parser
             $node   =& $this->$obj_id;
             // mixed contents
             if (count($node->children) > 0) {
-                if (trim($this->cdata)) {
+                if (trim($this->cdata) != '') {
                     $node->children[] = &new XML_Tree_Node(null, $this->cdata);
                 }
             } else {
@@ -303,6 +304,15 @@ class XML_Tree extends XML_Parser
             $parent    =& $this->$parent_id;
             // attach the node to its parent node children array
             $parent->children[] = $node;
+        } else {
+            $node =& $this->obj1;
+            if (count($node->children) > 0) {
+                if (trim($this->cdata)) {
+                    $node->children[] = &new XML_Tree_Node(null, $this->cdata);
+                }
+            } else {
+                $node->setContent($this->cdata);
+            }
         }
         $this->cdata = null;
         return null;
@@ -319,9 +329,7 @@ class XML_Tree extends XML_Parser
     */
     function cdataHandler($xp, $data)
     {
-        if (trim($data) != '') {
-            $this->cdata .= $data;
-        }
+        $this->cdata .= $data;
     }
 
     /**
@@ -330,11 +338,11 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree copy of this node.
     * @access public
     */
-    function clone()
+    function cloneTree()
     {
         $clone = new XML_Tree($this->filename, $this->version);
         if (!is_null($this->root)) {
-            $clone->root = $this->root->clone();
+            $clone->root = $this->root->cloneTree();
         }
 
         // clone all other vars
@@ -374,9 +382,9 @@ class XML_Tree extends XML_Parser
     {
         $out = '<?xml version="' . $this->version . "\"?>\n";
         if (!is_null($this->root))
-            {
-            if(!is_object($this->root) || (get_class($this->root) != 'xml_tree_node'))
-                return $this->raiseError("Bad XML root node");
+        {
+            if(!is_object($this->root) || (strtolower(get_class($this->root)) != 'xml_tree_node'))
+            return $this->raiseError("Bad XML root node");
             $out .= $this->root->get();
         }
         return $out;
@@ -395,15 +403,24 @@ class XML_Tree extends XML_Parser
     }
 
     /**
-    * Register a namespace.
-    *
-    * @param  string  $name namespace
-    * @param  string  $path path
-    *
-    * @access public
-    */
-    function registerName($name, $path) {
-        $this->namespace[$name] = $path;
+     * Get A Nodes Namespace
+     */
+     
+    function getNodeNamespace(&$node) {
+        $name_parts = explode(':',$node->name);
+        if (sizeof($name_parts) > 1) {
+            $namespace = $name_parts[0];
+        } else {
+            $namespace = '';
+        }
+        
+        if (isset($node->namespace[$namespace])) {
+            return $node->namespace[$namespace];
+        } elseif (isset($this->root->namespace[$namespace])) {
+            return $this->root->namespace[$namespace];
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -456,16 +473,61 @@ class XML_Tree extends XML_Parser
         if (empty($tagName)) {
             return $this->raiseError('Empty tag name');
         }
-        if (sizeof($this->children)==0) {
-            return null;
-        }
         $result = array();
-        foreach ($this->children as $child) {
+        foreach ($this->root->children as $child) {
             if ($child->name == $tagName) {
                 $result[] = $child;
             }
         }
         return $result;
+    }
+    
+    /**
+     * Gets all children that match a given tag name from node
+     *
+     * @param string $tagName Tag Name
+     * @param object &$node Node in which to search
+     * @see XML_Tree::getElementsByTagName()
+     * @return array An array of found Node objects, empty is none found.
+     * @access public
+     * @author Pierre-Alain Joye <paj@pearfr.org>
+     * @author Davey Shafik <davey@php.net>
+     */
+     
+    function &getElementsByTagNameFromNode($tagName, &$node)
+    {
+        if (empty($tagName)) {
+            return $this->raiseError('Empty tag name');
+        }
+        $result = array();
+        foreach ($node->children as $child) {
+            if ($child->name == $tagName) {
+                $result[] = $child;
+            }
+        }
+        return $result;
+    }
+     
+    
+    /**
+     * Checks if $name is a valid XML name
+     *
+     * @static
+     * @param string $name String to check for validity as an XML Name
+     * @return mixed
+     */
+    
+    function isValidName($name, $type) {
+        //  check for invalid starting character
+        if (!preg_match("/[[:alpha:]_]/", $name{0})) {
+            return new PEAR_Error( ucfirst($type) . " ('$name') has an invalid name, an XML name may only start with a letter or underscore");
+        }
+        
+        if (!preg_match("/^([a-zA-Z_]([a-zA-Z0-9_\-\.]*)?:)?[a-zA-Z_]([a-zA-Z0-9_\-\.]+)?$/", $name)) {
+            return new PEAR_Error( ucfirst($type) . " ('$name') has an invalid name, an XML name may only contain alphanumeric chars, period, hyphen, colon and underscores");
+        }
+        
+        return true;
     }
 }
 ?>

@@ -28,12 +28,14 @@
 * @package XML_Tree
 * @version 1.0  16-Aug-2001
 */
+
 class XML_Tree_Node {
     /**
     * Attributes of this node
     *
     * @var  array
     */
+
     var $attributes;
 
     /**
@@ -41,6 +43,7 @@ class XML_Tree_Node {
     *
     * @var  array
     */
+
     var $children;
 
     /**
@@ -48,6 +51,7 @@ class XML_Tree_Node {
     *
     * @var  string
     */
+
     var $content;
 
     /**
@@ -55,8 +59,27 @@ class XML_Tree_Node {
     *
     * @var  string
     */
+
     var $name;
 
+    /**
+     * Namespaces for the node
+     *
+     * @var array
+     */
+
+    
+    var $namespaces = array();
+    
+    /**
+     * Stores PEAR_Error upon error
+     *
+     * @var object PEAR_Error
+     */
+
+    var $error = null;
+     
+    
     /**
     * Constructor
     *
@@ -64,8 +87,21 @@ class XML_Tree_Node {
     * @param  string    content         Node content (text)
     * @param  array     attributes      Attribute-hash for the node
     */
+
     function XML_Tree_Node($name, $content = '', $attributes = array(), $lineno = null)
     {
+        $check_name = XML_Tree::isValidName($name, 'element');
+        if (PEAR::isError($check_name)) {
+            $this->error =& $check_name;
+            return;
+        }
+        foreach ($attributes as $attribute_name => $value) {
+            $error = XML_Tree::isValidName($attribute_name, 'Attribute');
+            if (PEAR::isError($error)) {
+                $this->error =& $error;
+                return;
+            }
+        }
         $this->name = $name;
         $this->setContent($content);
         $this->attributes = $attributes;
@@ -85,6 +121,7 @@ class XML_Tree_Node {
     * @return object  reference to new child node
     * @access public
     */
+
     function &addChild($child, $content = '', $attributes = array(), $lineno = null)
     {
         $index = sizeof($this->children);
@@ -98,7 +135,12 @@ class XML_Tree_Node {
                 $this->children[$index] = $child->root->getElement();
             }
         } else {
-            $this->children[$index] = new XML_Tree_Node($child, $content, $attributes, $lineno);
+            $node = new XML_Tree_Node($child, $content, $attributes, $lineno);
+            if (PEAR::isError($node->error)) {
+                return $node->error;
+            }
+            
+            $this->children[$index] = $node;
         }
 
         return $this->children[$index];
@@ -111,23 +153,25 @@ class XML_Tree_Node {
     * @return object    Reference to the cloned copy.
     * @access public
     */
-    function &clone()
+
+    function &cloneNode()
     {
         $clone = new XML_Tree_Node($this->name,$this->content,$this->attributes);
 
         $max_child=count($this->children);
         for($i=0;$i<$max_child;$i++) {
-            $clone->children[]=$this->children[$i]->clone();
+            $clone->children[]=$this->children[$i]->cloneNode();
         }
 
         /* for future use....
-            // clone all other vars
-            $temp=get_object_vars($this);
-            foreach($temp as $varname => $value)
-                if (!in_array($varname,array('name','content','attributes','children')))
-                    $clone->$varname=$value;
-        */
+        // clone all other vars
+        $temp=get_object_vars($this);
+        foreach($temp as $varname => $value)
+        if (!in_array($varname,array('name','content','attributes','children')))
+        $clone->$varname=$value;
+         */
 
+        
         return $clone;
     }
 
@@ -149,6 +193,7 @@ class XML_Tree_Node {
     * @return Reference to the newly inserted node, or PEAR_Error upon insertion error.
     * @access public
     */
+
     function &insertChild($path,$pos,&$child, $content = '', $attributes = array())
     {
         $parent =& $this->getNodeAt($path);
@@ -165,29 +210,29 @@ class XML_Tree_Node {
         }
 
         if (is_object($child)) { // child is an object
-            // insert a single node
-            if (strtolower(get_class($child)) == 'xml_tree_node') {
-                array_splice($this->children, $pos, 0, 'dummy');
-                if ($pos < 0) {
-                    $pos = count($this->children) + $pos - 1;
-                }
-                $this->children[$pos] = &$child;
-            // insert a tree i.e insert root-element of tree
-            } elseif (strtolower(get_class($child)) == 'xml_tree' && isset($child->root)) {
-                array_splice($this->children, $pos, 0, 'dummy');
-                if ($pos < 0) {
-                    $pos = count($this->children) + $pos - 1;
-                }
-                $this->children[$pos] = $child->root;
-            } else {
-                return new PEAR_Error("Bad node (must be a XML_Tree or an XML_Tree_Node)");
-            }
-        } else { // child offered is a string
+        // insert a single node
+        if (strtolower(get_class($child)) == 'xml_tree_node') {
             array_splice($this->children, $pos, 0, 'dummy');
             if ($pos < 0) {
                 $pos = count($this->children) + $pos - 1;
             }
-            $this->children[$pos] = new XML_Tree_Node($child, $content, $attributes);
+            $this->children[$pos] = &$child;
+            // insert a tree i.e insert root-element of tree
+        } elseif (strtolower(get_class($child)) == 'xml_tree' && isset($child->root)) {
+            array_splice($this->children, $pos, 0, 'dummy');
+            if ($pos < 0) {
+                $pos = count($this->children) + $pos - 1;
+            }
+            $this->children[$pos] = $child->root;
+        } else {
+            return new PEAR_Error("Bad node (must be a XML_Tree or an XML_Tree_Node)");
+        }
+        } else { // child offered is a string
+        array_splice($this->children, $pos, 0, 'dummy');
+        if ($pos < 0) {
+            $pos = count($this->children) + $pos - 1;
+        }
+        $this->children[$pos] = new XML_Tree_Node($child, $content, $attributes);
         }
         return $this;
     }
@@ -202,6 +247,7 @@ class XML_Tree_Node {
     * @return mixed     The removed node, or PEAR_Error upon removal error.
     * @access public
     */
+
     function &removeChild($pos)
     {
         if (($pos < -count($this->children)) || ($pos >= count($this->children))) {
@@ -213,17 +259,32 @@ class XML_Tree_Node {
     }
 
     /**
+    * Register a namespace.
+    *
+    * @param  string  $name namespace
+    * @param  string  $path path
+    *
+    * @access public
+    */
+
+    function registerName($name, $path) {
+        $this->namespace[$name] = $path;
+    }
+
+    /**
     * Returns text representation of this node.
     *
     * @return  string   text (xml) representation of this node. Each tag is
     *                   indented according to its level.
     * @access public
     */
+
     function &get()
     {
         static $deep = -1;
         static $do_ident = true;
         $deep++;
+        $empty = false;
         if ($this->name !== null) {
             $ident = str_repeat('  ', $deep);
             if ($do_ident) {
@@ -234,9 +295,24 @@ class XML_Tree_Node {
             foreach ($this->attributes as $name => $value) {
                 $out .= ' ' . $name . '="' . $value . '"';
             }
-
-            $out .= '>' . $this->content;
-
+            
+            if (isset($this->namespace) && (is_array($this->namespace))) {
+                foreach ($this->namespace as $qualifier => $uri) {
+                    if ($qualifier == '') {
+                        $out .= " xmlns='$uri'";
+                    } else {
+                        $out .= " xmlns:$qualifier='$uri'";
+                    }
+                }
+            }
+            
+            if ($this->content == '' && sizeof($this->children) === 0 && $deep != 0) {
+                $out .= ' />';
+                $empty = true;
+            } else {
+                $out .= '>' . $this->content;
+            }
+            
             if (sizeof($this->children) > 0) {
                 $out .= "\n";
                 foreach ($this->children as $child) {
@@ -245,9 +321,10 @@ class XML_Tree_Node {
             } else {
                 $ident = '';
             }
-            if ($do_ident) {
+
+            if ($do_ident && $empty != true) {
                 $out .= $ident . '</' . $this->name . ">\n";
-            } else {
+            } elseif ($empty != true) {
                 $out .= '</' . $this->name . '>';
             }
             $do_ident = true;
@@ -267,10 +344,11 @@ class XML_Tree_Node {
     * @return string  attribute, or null if attribute is unset.
     * @access public
     */
+
     function getAttribute($name)
     {
-        if (isset($this->attributes[strtolower($name)])) {
-            return $this->attributes[strtolower($name)];
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
         }
         return null;
     }
@@ -283,9 +361,10 @@ class XML_Tree_Node {
     *
     * @access public
     */
+
     function setAttribute($name, $value = '')
     {
-        $this->attributes[strtolower($name)] = $value;
+        $this->attributes[$name] = $value;
     }
 
     /**
@@ -295,10 +374,11 @@ class XML_Tree_Node {
     *
     * @access public
     */
+
     function unsetAttribute($name)
     {
-        if (isset($this->attributes[strtolower($name)])) {
-            unset($this->attributes[strtolower($name)]);
+        if (isset($this->attributes[$name])) {
+            unset($this->attributes[$name]);
         }
     }
 
@@ -309,6 +389,7 @@ class XML_Tree_Node {
     *
     * @access public
     */
+
     function setContent(&$content)
     {
         $this->content = $this->encodeXmlEntities($content);
@@ -325,6 +406,7 @@ class XML_Tree_Node {
     *                   be found.
     * @access public
     */
+
     function &getElement($path)
     {
         if (!is_array($path)) {
@@ -360,6 +442,7 @@ class XML_Tree_Node {
     *                   returned.
     * @access public
     */
+
     function &getNodeAt($path)
     {
         if (is_string($path))
@@ -399,6 +482,7 @@ class XML_Tree_Node {
     * @return  string  xml
     * @access  public
     */
+
     function encodeXmlEntities($xml)
     {
         $xml = str_replace(array('ü', 'Ü', 'ö',
@@ -438,6 +522,7 @@ class XML_Tree_Node {
     * @return  string  Decoded text
     * @access  public
     */
+
     function decodeXmlEntities($xml)
     {
         static $trans_tbl = null;
@@ -460,6 +545,7 @@ class XML_Tree_Node {
     *
     * @access  public
     */
+
     function dump() {
         echo $this->get();
     }
