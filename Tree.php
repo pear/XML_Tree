@@ -36,8 +36,8 @@ require_once 'XML/Tree/Node.php';
 * Example
 *
 *    $tree  = new XML_Tree;
-*    $root =& $tree->add_root('root');
-*    $foo  =& $root->add_child('foo');
+*    $root =& $tree->addRoot('root');
+*    $foo  =& $root->addChild('foo');
 *
 *    header('Content-Type: text/xml');
 *    $tree->dump();
