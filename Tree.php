@@ -86,6 +86,7 @@ class XML_Tree extends XML_Parser
     /**
     * Constructor
     *
+    * @param  string  Filename
     * @param  string  XML Version
     */
     function XML_Tree($filename = '', $version = '1.0') {
@@ -101,12 +102,19 @@ class XML_Tree extends XML_Parser
     *
     * @access public
     */
-    function &add_root($name, $content = '', $attributes = array()) {
+    function &addRoot($name, $content = '', $attributes = array()) {
         $this->root = new XML_Tree_Node($name, $content, $attributes);
         return $this->root;
     }
 
-    /*
+    /**
+    * @deprecated
+    */
+    function &add_root($name, $content = '', $attributes = array()) {
+        return $this->addRoot($name, $content, $attributes);
+    }
+
+    /**
     * inserts a child/tree (child) into tree ($path,$pos) and
     * maintains namespace integrity
     *
@@ -119,7 +127,7 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree_Node inserted child (node)
     * @access public
     */
-    function &insert_child($path,$pos,$child, $content = '', $attributes = array()) {
+    function &insertChild($path,$pos,$child, $content = '', $attributes = array()) {
         // update namespace to maintain namespace integrity
         $count=count($path);
         foreach($this->namespace as $key => $val) {
@@ -129,6 +137,13 @@ class XML_Tree extends XML_Parser
 
         $parent=&$this->get_node_by_path($path);
         return($parent->insert_child($pos,$child,$content,$attributes));
+    }
+
+    /**
+    * @deprecated
+    */
+    function &insert_child($path,$pos,$child, $content = '', $attributes = array()) {
+        return $this->insertChild($path, $child, $content, $attributes);
     }
 
     /*
@@ -141,7 +156,7 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree_Node parent whichs child was removed
     * @access public
     */
-    function &remove_child($path,$pos) {
+    function &removeChild($path,$pos) {
         // update namespace to maintain namespace integrity
         $count=count($path);
         foreach($this->namespace as $key => $val) {
@@ -154,6 +169,13 @@ class XML_Tree extends XML_Parser
 
         $parent=&$this->get_node_by_path($path);
         return($parent->remove_child($pos));
+    }
+
+    /**
+    * @deprecated
+    */
+    function &remove_child($path, $pos) {
+        return $this->removeChild($path, $pos);
     }
 
     /*
@@ -306,8 +328,15 @@ class XML_Tree extends XML_Parser
     *
     * @access public
     */
-    function &get_name($name) {
+    function &getName($name) {
         return $this->root->get_element($this->namespace[$name]);
+    }
+
+    /**
+    * @deprecated
+    */
+    function &get_name($name) {
+        return $this->getName($name);
     }
 
     /**
@@ -318,8 +347,15 @@ class XML_Tree extends XML_Parser
     *
     * @access public
     */
-    function register_name($name, $path) {
+    function registerName($name, $path) {
         $this->namespace[$name] = $path;
+    }
+
+    /**
+    * @deprecated
+    */
+    function register_name($name, $path) {
+        return $this->registerName($name, $path);
     }
 }
 ?>

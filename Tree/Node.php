@@ -79,7 +79,7 @@ class XML_Tree_Node {
     * @param  array   attributes
     * @return object  reference to new child node
     */
-    function &add_child($child, $content = '', $attributes = array()) {
+    function &addChild($child, $content = '', $attributes = array()) {
         $index = sizeof($this->children);
 
         if (is_object($child)) {
@@ -95,6 +95,13 @@ class XML_Tree_Node {
         }
 
         return $this->children[$index];
+    }
+
+    /**
+    * @deprecated
+    */
+    function &add_child($child, $content = '', $attributes = array()) {
+        return $this->addChild($child, $content, $attributes);
     }
 
     /**
@@ -126,7 +133,7 @@ class XML_Tree_Node {
     *
     * @return  inserted node
     */
-    function &insert_child($path,$pos,&$child, $content = '', $attributes = array()) {
+    function &insertChild($path,$pos,&$child, $content = '', $attributes = array()) {
         // direct insert of objects useing array_splice() faild :(
         array_splice($this->children,$pos,0,'dummy'); 
         if (is_object($child)) { // child offered is not instanziated
@@ -145,15 +152,29 @@ class XML_Tree_Node {
     }
 
     /**
+    * @deprecated
+    */
+    function &insert_child($path,$pos,&$child, $content = '', $attributes = array()) {
+        return $this->insertChild($path,$pos,&$child, $content, $attributes);
+    }
+
+    /**
     * removes child ($pos)
     *
     * @param integer pos position of child in children-list
     *
     * @return  removed node
     */
-    function &remove_child($pos) {
-        // array_splice() instead of a simple unset() to maintein index-integrity
+    function &removeChild($pos) {
+        // array_splice() instead of a simple unset() to maintain index-integrity
         return(array_splice($this->children,$pos,1));
+    }
+
+    /**
+    * @deprecated
+    */
+    function &remove_child($pos) {
+        return $this->removeChild($pos);
     }
 
     /**
@@ -189,8 +210,15 @@ class XML_Tree_Node {
     * @param  string  name
     * @return string  attribute
     */
-    function get_attribute($name) {
+    function getAttribute($name) {
         return $this->attributes[strtolower($name)];
+    }
+
+    /**
+    * @deprecated
+    */
+    function get_attribute($name) {
+        return $this->getAttribute($name);
     }
 
     /**
@@ -199,7 +227,7 @@ class XML_Tree_Node {
     * @param  string  path
     * @return object  element
     */
-    function &get_element($path) {
+    function &getElement($path) {
         if (sizeof($path) == 0) {
             return $this;
         }
@@ -210,13 +238,27 @@ class XML_Tree_Node {
     }
 
     /**
+    * @deprecated
+    */
+    function &get_element($path) {
+        return $this->getElement($path);
+    }
+
+    /**
     * Sets an attribute.
     *
     * @param  string  name
     * @param  string  value
     */
-    function set_attribute($name, $value = '') {
+    function setAttribute($name, $value = '') {
         $this->attributes[strtolower($name)] = $value;
+    }
+
+    /**
+    * @deprecated
+    */
+    function set_attribute($name, $value = '') {
+        return $this->setAttribute($name, $value);
     }
 
     /**
@@ -224,17 +266,29 @@ class XML_Tree_Node {
     *
     * @param  string  name
     */
-    function unset_attribute($name) {
+    function unsetAttribute($name) {
         unset($this->attributes[strtolower($name)]);
+    }
+
+    /**
+    * @deprecated
+    */
+    function unset_attribute($name) {
+        return $this->unsetAttribute($name);
     }
 
     /**
     *
     *
     */
-    function set_content(&$content)
+    function setContent(&$content)
     {
         $this->content = $this->_xml_entities($content);
+    }
+
+    function set_content(&$content) 
+    {
+        return $this->setContent(&$content);
     }
 
     /**

@@ -5,9 +5,9 @@ require 'XML/Tree.php';
 // Build a xml file
   /*  <-- (un)comment this line for the 2º example
 $tree = new XML_Tree;
-$root = $tree->add_root('MyFriends');
-$foo  = $root->add_child('name', 'Foo');
-$bar  = $root->add_child('name', 'Bar', array('age' => 21));
+$root = $tree->addRoot('MyFriends');
+$foo  = $root->addChild('name', 'Foo');
+$bar  = $root->addChild('name', 'Bar', array('age' => 21));
 $tree->dump();
 print_r($root);
 $root->dump();
