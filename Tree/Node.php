@@ -15,7 +15,7 @@
 // +----------------------------------------------------------------------+
 // | Authors: Bernd Römer <berndr@bonn.edu>                               |
 // |          Sebastian Bergmann <sb@sebastian-bergmann.de>               |
-// |          Christian Kühn <ck@chkuehn.de> (escape xml entities         |
+// |          Christian Kühn <ck@chkuehn.de> (escape xml entities)        |
 // +----------------------------------------------------------------------+
 //
 // $Id$
