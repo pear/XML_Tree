@@ -157,7 +157,7 @@ class XML_Tree {
     */
     function read_file($filename = '') {
         if ($this->_open_file($filename, 'r')) {
-            while ($data = @fread($this->fil, 4096)) {
+            while ($data = @fread($this->file, 4096)) {
                 // ...
             }
 
