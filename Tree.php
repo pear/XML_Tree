@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------+
 // | PEAR :: XML_Tree                                                     |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2002 The PHP Group                                |
+// | Copyright (c) 1997-2003 The PHP Group                                |
 // +----------------------------------------------------------------------+
 // | This source file is subject to version 2.02 of the PHP license,      |
 // | that is bundled with this package in the file LICENSE, and is        |
@@ -253,7 +253,7 @@ class XML_Tree extends XML_Parser
     * @return mixed The XML tree root (an XML_Tree_Node), or PEAR_Error upon error.
     * @access public
     */
-    function getTreeFromString($str)
+    function &getTreeFromString($str)
     {
         $this->folding = false;
         $this->XML_Parser(null, 'event');
@@ -339,7 +339,7 @@ class XML_Tree extends XML_Parser
     */
     function cdataHandler($xp, $data)
     {
-        if (trim($data)) {
+        if (trim($data) != '') {
             $this->cdata .= $data;
         }
     }
