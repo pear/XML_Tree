@@ -259,7 +259,7 @@ class XML_Tree extends XML_Parser
         $lineno = xml_get_current_line_number($xp);
         // root elem
         if (!isset($this->i)) {
-            $this->obj1 =& $this->add_root($elem, null, $attribs, $lineno);
+            $this->obj1 =& $this->addRoot($elem, null, $attribs, $lineno);
             $this->i = 2;
         } else {
             // mixed contents
@@ -297,7 +297,7 @@ class XML_Tree extends XML_Parser
                     $node->children[] = &new XML_Tree_Node(null, $this->cdata);
                 }
             } else {
-                $node->set_content($this->cdata);
+                $node->setContent($this->cdata);
             }
             $parent_id = 'obj' . ($this->i - 1);
             $parent    =& $this->$parent_id;
@@ -423,28 +423,49 @@ class XML_Tree extends XML_Parser
         if (is_null($this->root)){
             return $this->raiseError("XML_Tree hasn't a root node");
         }
-
         if (is_string($path))
             $path = explode("/", $path);
-
         if (sizeof($path) == 0) {
             return $this->raiseError("Path to node is empty");
         }
-
         $path1 = $path;
         $rootName = array_shift($path1);
-
         if ($this->root->name != $rootName) {
             return $this->raiseError("Path does not match the document root");
         }
-
         $x =& $this->root->getNodeAt($path1);
-
-        if (!PEAR::isError($x))
+        if (!PEAR::isError($x)) {
             return $x;
-
+        }
         // No node with that name found
         return $this->raiseError("Bad path to node: [".implode('/', $path)."]");
+    }
+
+    /**
+    * Gets all children that match a given tag name.
+    *
+    * @param  string    Tag name
+    *
+    * @return array     An array of Node objects of the children found,
+    *                   an empty array if none
+    * @access public
+    * @author Pierre-Alain Joye <paj@pearfr.org>
+    */
+    function &getElementsByTagName($tagName)
+    {
+        if (empty($tagName)) {
+            return $this->raiseError('Empty tag name');
+        }
+        if (sizeof($this->children)==0) {
+            return null;
+        }
+        $result = array();
+        foreach ($this->children as $child) {
+            if ($child->name == $tagName) {
+                $result[] = $child;
+            }
+        }
+        return $result;
     }
 }
 ?>
