@@ -97,7 +97,10 @@ class XML_Tree extends XML_Parser
     /**
     * Add root node.
     *
-    * @param  string  $name     name of root element
+    * @param  string  $name          name of root element
+    * @param  string  $content       content (text) for new node
+    * @param  array   $attributes    attribute-hash for new node
+    *
     * @return object XML_Tree_Node   reference to root node
     *
     * @access public
