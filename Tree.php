@@ -16,11 +16,14 @@
 // | Authors: Sebastian Bergmann <sb@sebastian-bergmann.de>               |
 // |          Bernd Römer <berndr@bonn.edu>                               |
 // |          Christian Kühn <ck@chkuehn.de>                              |
+// |          Tomas V.V.Cox <cox@idecnet.com> (tree mapping from xml file)|
+// |                                                                      |
 // +----------------------------------------------------------------------+
 //
 // $Id$
 //
 
+require_once 'XML/Parser.php';
 require_once 'XML/Tree/Node.php';
 
 /**
@@ -45,7 +48,8 @@ require_once 'XML/Tree/Node.php';
 * @package XML_Tree
 * @version 1.0  16-Aug-2001
 */
-class XML_Tree {
+class XML_Tree extends XML_Parser
+{
     /**
     * File Handle
     *
@@ -97,9 +101,74 @@ class XML_Tree {
     * @param  string  name of root element
     * @return object  reference to root node
     */
-    function &add_root($name) {        
+    function &add_root($name) {
         $this->root = new XML_Tree_Node($name);
         return $this->root;
+    }
+
+    /*
+    * Maps a xml file to a objects tree
+    *
+    * @return object The objects tree or an Pear error
+    */
+    function &getTreeFromFile ()
+    {
+        $this->folding = false;
+        $this->XML_Parser(null, 'event');
+        $err = $this->setInputFile($this->filename);
+        if (PEAR::isError($err)) {
+            return $err;
+        }
+        $this->cdata = null;
+        $this->store_cdata = false;
+        $err = $this->parse();
+        if (PEAR::isError($err)) {
+            return $err;
+        }
+        return $this->root;
+    }
+
+    function StartHandler($xp, $elem, &$attribs)
+    {
+        // root elem
+        if (!isset($this->i)) {
+            $this->obj1 =& $this->add_root($elem);
+            $this->i = 2;
+        } else {
+            $obj_id = 'obj' . $this->i++;
+            $this->$obj_id =& new XML_Tree_Node($elem, null, $attribs);
+        }
+        $this->store_cdata = true;
+        return NULL;
+    }
+
+    function EndHandler($xp, $elem)
+    {
+        $this->i--;
+        if ($this->i > 1) {
+            $obj_id = 'obj' . $this->i;
+            // recover the node created in StartHandler
+            $node   =& $this->$obj_id;
+            $node->set_content($this->cdata);
+            $parent_id = 'obj' . ($this->i - 1);
+            $parent    =& $this->$parent_id;
+            // attach the node to its parent node children array
+            $parent->children[] = $node;
+        }
+        $this->cdata = null;
+        $this->store_cdata = false;
+        return NULL;
+    }
+
+    /*
+    * The xml character data handler
+    */
+    function cdataHandler($xp, $data)
+    {
+        // only store data inside tags
+        if ($this->store_cdata) {
+            $this->cdata .= $data;
+        }
     }
 
     /**
@@ -107,7 +176,7 @@ class XML_Tree {
     *
     * @return  object XML_Tree
     */
-    function copy() {
+    function clone() {
         return $this;
     }
 
