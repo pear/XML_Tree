@@ -67,8 +67,8 @@ class XML_Tree_Node {
     function XML_Tree_Node($name, $content = '', $attributes = array()) {
         $this->attributes = $attributes;
         $this->children   = array();
-        $this->content    = $this->_xml_entities($content);
-        $this->name       = strtolower($name);
+        $this->set_content($content);
+        $this->name       = $name;
     }
 
     /**
@@ -170,6 +170,15 @@ class XML_Tree_Node {
     }
 
     /**
+    *
+    *
+    */
+    function set_content(&$content)
+    {
+        $this->content = $this->_xml_entities($content);
+    }
+
+    /**
     * Escape XML entities.
     *
     * @param   string  xml
@@ -202,6 +211,13 @@ class XML_Tree_Node {
                            );
 
         return $xml;
+    }
+
+    /**
+    * Print text representation of XML tree.
+    */
+    function dump() {
+        echo $this->get();
     }
 }
 ?>
