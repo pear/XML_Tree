@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE package SYSTEM "../package.dtd">
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
 <package version="1.0">
@@ -24,18 +23,17 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.1</version>
-    <date>2002-05-16</date>
-    <license>PHP 2.02</license>
+    <version>1.2</version>
+    <date>2003-07-10</date>
+    <license>PHP</license>
     <state>stable</state>
     <notes>
-- Added support for mixed element content (cox)
-- Added identation for $node->get() (cox)
-- Adapted API to PEAR coding standars (mj)
-- Added getTreeFromString() (cox)
-- Root node now stores attributes (mj, cox)
-- Improved clone(), added insert_child() and remove_child() (bernd)
-(Backwards compatibility preserved)
+- Fixed insertChild() and removeChild()
+- Added getNodeAt() (gets a node by its path)
+- Added decodeXmlEntities()
+- Improved PHPDoc
+
+Contributed by Michele Manzato &lt;Michele.Manzato@verona.miz.it&gt;
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="XML">
