@@ -192,7 +192,7 @@ class XML_Tree extends XML_Parser
     {
         // root elem
         if (!isset($this->i)) {
-            $this->obj1 =& $this->add_root($elem);
+            $this->obj1 =& $this->add_root($elem, null, $attribs);
             $this->i = 2;
         } else {
             $obj_id = 'obj' . $this->i++;
