@@ -13,9 +13,9 @@
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
-// | Authors: Sebastian Bergmann <sb@sebastian-bergmann.de>               |
-// |          Bernd Römer <berndr@bonn.edu>                               |
-// |          Christian Kühn <ck@chkuehn.de>                              |
+// | Authors: Bernd Römer <berndr@bonn.edu>                               |
+// |          Sebastian Bergmann <sb@sebastian-bergmann.de>               |
+// |          Christian Kühn <ck@chkuehn.de> (escape xml entities         |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -24,7 +24,7 @@
 /**
 * PEAR::XML_Tree_Node
 *
-* @author  Sebastian Bergmann <sb@sebastian-bergmann.de>
+* @author  Bernd Römer <berndr@bonn.edu>
 * @package XML_Tree
 * @version 1.0  16-Aug-2001
 */

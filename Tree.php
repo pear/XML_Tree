@@ -13,11 +13,9 @@
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
-// | Authors: Sebastian Bergmann <sb@sebastian-bergmann.de>               |
-// |          Bernd Römer <berndr@bonn.edu>                               |
-// |          Christian Kühn <ck@chkuehn.de>                              |
+// | Authors: Bernd Römer <berndr@bonn.edu>                               |
+// |          Sebastian Bergmann <sb@sebastian-bergmann.de>               |
 // |          Tomas V.V.Cox <cox@idecnet.com> (tree mapping from xml file)|
-// |                                                                      |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -44,7 +42,7 @@ require_once 'XML/Tree/Node.php';
 *    header('Content-Type: text/xml');
 *    $tree->dump();
 *
-* @author  Sebastian Bergmann <sb@sebastian-bergmann.de>
+* @author  Bernd Römer <berndr@bonn.edu>
 * @package XML_Tree
 * @version 1.0  16-Aug-2001
 */
@@ -217,57 +215,6 @@ class XML_Tree extends XML_Parser
     */
     function register_name($name, $path) {
         $this->namespace[$name] = $path;
-    }
-
-    /**
-    * Read XML from a file.
-    *
-    * @param  string  filename
-    */
-    function read_file($filename = '') {
-        if ($this->_open_file($filename, 'r')) {
-            while ($data = @fread($this->file, 4096)) {
-                // ...
-            }
-
-            @fclose($this->file);
-        }
-    }
-
-    /**
-    * Write XML to a file.
-    *
-    * @param  string  filename
-    */
-    function write_file($filename = '') {
-        if ($this->_open_file($filename, 'w')) {
-            @fputs($this->file, $this->get());
-            @fclose($this->file);
-        }
-    }
-
-    /**
-    * Open a file.
-    *
-    * @param  string  filename
-    * @param  string  mode
-    * @return boolean success
-    * @access private
-    */
-    function _open_file($filename, $mode) {
-        if (empty($filename)) {
-            if (!empty($this->filename)) {
-                $filename =& $this->filename;
-            } else {
-                return false;
-            }
-        }
-
-        if ($this->file = @fopen($filename, $mode)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
 ?>
