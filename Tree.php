@@ -105,6 +105,54 @@ class XML_Tree extends XML_Parser
     }
 
     /*
+    * inserts a child/tree (child) into tree ($path,$pos) and 
+    * maintains namespace integrity
+    *
+    * @param array path path to parent of child to remove
+    * @param integer pos position of child to be inserted in its parents children-list
+    * @param mixed child child-node (by XML_Tree,XML_Node or Name)
+    * @param string content content (text) for new node
+    * @param array attributes attribute-hash for new node
+    *
+    * @return object inserted child (node)
+    */    
+    function &insert_child($path,$pos,$child, $content = '', $attributes = array()) {
+        // update namespace to maintain namespace integrity
+        $count=count($path);
+        foreach($this->namespace as $key => $val) {
+            if ((array_slice($val,0,$count)==$path) && ($val[$count]>=$pos))
+                $this->namespace[$key][$count]++;
+        }
+
+        $parent=&$this->get_node_by_path($path);
+        return($parent->insert_child($pos,$child,$content,$attributes));
+    }
+
+    /*
+    * removes a child ($path,$pos) from tree ($path,$pos) and 
+    * maintains namespace integrity
+    *
+    * @param array path path to parent of child to remove
+    * @param integer pos position of child in parents children-list
+    *
+    * @return object parent whichs child was removed
+    */    
+    function &remove_child($path,$pos) {
+        // update namespace to maintain namespace integrity
+        $count=count($path);
+        foreach($this->namespace as $key => $val) {
+            if (array_slice($val,0,$count)==$path) {
+                if ($val[$count]==$pos) { unset($this->namespace[$key]); break; }
+                if ($val[$count]>$pos)
+                    $this->namespace[$key][$count]--;
+            }
+        }
+
+        $parent=&$this->get_node_by_path($path);
+        return($parent->remove_child($pos));
+    }
+
+    /*
     * Maps a xml file to a objects tree
     *
     * @return object The objects tree or an Pear error
@@ -172,10 +220,19 @@ class XML_Tree extends XML_Parser
     /**
     * Get a copy of this tree.
     *
-    * @return  object XML_Tree
+    * @return object XML_Tree
     */
     function clone() {
-        return $this;
+        $clone=new XML_Tree($this->filename,$this->version);
+        $clone->root=$this->root->clone();
+
+        // clone all other vars
+        $temp=get_object_vars($this);
+        foreach($temp as $varname => $value)
+            if (!in_array($varname,array('filename','version','root')))
+                $clone->$varname=$value;
+
+        return($clone);
     }
 
     /**

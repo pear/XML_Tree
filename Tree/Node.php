@@ -98,6 +98,65 @@ class XML_Tree_Node {
     }
 
     /**
+    * clone node and all its children (recursive)
+    *
+    * @return object reference to the clone-node
+    */
+    function &clone() {
+        $clone=new XML_Tree_Node($this->name,$this->content,$this->attributes);
+
+        $max_child=count($this->children);
+        for($i=0;$i<$max_child;$i++) {
+            $clone->children[]=$this->children[$i]->clone();
+        }
+
+        /* for future use....
+            // clone all other vars
+            $temp=get_object_vars($this);
+            foreach($temp as $varname => $value)
+                if (!in_array($varname,array('name','content','attributes','children')))
+                    $clone->$varname=$value;
+        */
+
+        return($clone);
+    }
+
+    /**
+    * inserts child ($child) to a specified child-position ($pos)
+    *
+    * @return  inserted node
+    */
+    function &insert_child($path,$pos,&$child, $content = '', $attributes = array()) {
+        // direct insert of objects useing array_splice() faild :(
+        array_splice($this->children,$pos,0,'dummy'); 
+        if (is_object($child)) { // child offered is not instanziated
+            // insert a single node
+            if (strtolower(get_class($child)) == 'xml_tree_node') {  
+                $this->children[$pos]=&$child;
+            }
+            // insert a tree i.e insert root-element
+            if (strtolower(get_class($child)) == 'xml_tree' && isset($child->root)) {
+                $this->children[$pos]=$child->root->get_element();
+            }
+        } else { // child offered is not instanziated
+            $this->children[$pos]=new XML_Tree_Node($child, $content, $attributes);
+        }
+        return($this);
+    }
+
+    /**
+    * removes child ($pos)
+    *
+    * @param integer pos position of child in children-list
+    *
+    * @return  removed node
+    */
+    function &remove_child($pos) {
+        // array_splice() instead of a simple unset() to maintein index-integrity
+        return(array_splice($this->children,$pos,1));
+    }
+
+    /**
     * Returns text representation of this node.
     *
     * @return  string  xml
