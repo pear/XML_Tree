@@ -13,7 +13,8 @@ $root->addChild('foo','bar');
 $baz =& $root->addChild('baz');
 
 $baz->addChild('bat','qux', array(), null, true);
-$baz->addChild('bat','quux', array(), null, false);
+$baz->addChild('bat','quux', array(), null);
+$baz->addChild(null, 'foo', array(), null, true);
 
 $tree->dump();
 
