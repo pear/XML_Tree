@@ -24,10 +24,10 @@
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="XML">
-	<file role="php">Tree.php</file>
-	<dir name="Tree"> 
-	  <file role="php">Node.php</file>
-	</dir>
+        <file role="php" name="Tree.php"/>
+        <dir name="Tree"> 
+          <file role="php" name="Node.php"/>
+        </dir>
       </dir>
     </filelist>
   </release>
