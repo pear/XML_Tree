@@ -42,7 +42,7 @@ representation, without the need for an extension like DOMXML.</description>
 * Added the ability to encapsulate all CDATA in &lt;![CDATA[]]&gt; Sections (see XML_Tree::useCdataSections()) or a specific
 node's CDATA using the new argument to XML_Tree_Node::XML_Tree_Node() and XML_Tree_Node::addChild())</notes>
     <deps>
-      <dep type="pkg" rel="gt" version="1.1.0" optional="no">XML_Parser</dep>
+      <dep type="pkg" rel="ge" version="1.1.0" optional="no">XML_Parser</dep>
       <dep type="php" rel="ge" version="4.0.4" optional="no"/>
       <dep type="ext" rel="has" optional="no">pcre</dep>
       <dep type="ext" rel="has" optional="no">xml</dep>

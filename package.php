@@ -47,7 +47,7 @@ if (PEAR::isError($result)) {
 $package->addMaintainer('davey','lead','Davey Shafik','davey@php.net');
 
 $package->addDependency('auto');
-$package->addDependency('XML_Parser', '1.1.0', 'gt', 'pkg', false);
+$package->addDependency('XML_Parser', '1.1.0', 'ge', 'pkg', false);
 
 
 if (isset($_SERVER['argv'][1]) && $_SERVER['argv'][1] == 'commit') {
