@@ -103,6 +103,11 @@ class XML_Tree_Node {
             $this->error =& $check_name;
             return;
         }
+        
+        if (!is_array($attributes)) {
+            $attributes = array();
+        }
+        
         foreach ($attributes as $attribute_name => $value) {
             $error = XML_Tree::isValidName($attribute_name, 'Attribute');
             if (PEAR::isError($error)) {
@@ -292,8 +297,8 @@ class XML_Tree_Node {
         static $do_ident = true;
         $deep++;
         $empty = false;
+        $ident = str_repeat('  ', $deep);
         if ($this->name !== null) {
-            $ident = str_repeat('  ', $deep);
             if ($do_ident) {
                 $out = $ident . '<' . $this->name;
             } else {
@@ -321,11 +326,11 @@ class XML_Tree_Node {
                 if ($this->use_cdata_section == true || ($use_cdata_section == true && $this->use_cdata_section !== false)) {
                     if (trim($this->content) != '') {
                         $out .= '<![CDATA[' .$this->content. ']]>';
+                    }
                     } else {
+                    if (trim($this->content) != '') {
                         $out .= $this->content;
                     }
-                } else {
-                    $out .= $this->content;
                 }
             }
 
@@ -345,8 +350,15 @@ class XML_Tree_Node {
             }
             $do_ident = true;
         } else {
-            $out = $this->content;
-            $do_ident = false;
+            if ($this->use_cdata_section == true || ($use_cdata_section == true && $this->use_cdata_section !== false)) {
+                if (trim($this->content) != '') {
+                    $out = $ident . '<![CDATA[' .$this->content. ']]>' . "\n";
+                }
+            } else {
+                if (trim($this->content) != '') {
+                    $out = $ident . $this->content . "\n";
+                }
+            }
         }
         $deep--;
         return $out;
@@ -406,7 +418,7 @@ class XML_Tree_Node {
      * @access public
      */
 
-    function setContent($content, $use_cdata_section = false)
+    function setContent($content, $use_cdata_section = null)
     {
         $this->use_cdata_section = $use_cdata_section;
 
