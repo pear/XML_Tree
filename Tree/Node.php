@@ -135,10 +135,10 @@ class XML_Tree_Node {
     */
     function &insertChild($path,$pos,&$child, $content = '', $attributes = array()) {
         // direct insert of objects useing array_splice() faild :(
-        array_splice($this->children,$pos,0,'dummy'); 
+        array_splice($this->children,$pos,0,'dummy');
         if (is_object($child)) { // child offered is not instanziated
             // insert a single node
-            if (strtolower(get_class($child)) == 'xml_tree_node') {  
+            if (strtolower(get_class($child)) == 'xml_tree_node') {
                 $this->children[$pos]=&$child;
             }
             // insert a tree i.e insert root-element
@@ -182,8 +182,12 @@ class XML_Tree_Node {
     *
     * @return  string  xml
     */
-    function &get() {
-        $out = '<' . $this->name;
+    function &get()
+    {
+        static $deep = -1;
+        $deep++;
+        $ident = str_repeat('  ', $deep);
+        $out = $ident . '<' . $this->name;
 
         foreach ($this->attributes as $name => $value) {
             $out .= ' ' . $name . '="' . $value . '"';
@@ -197,10 +201,12 @@ class XML_Tree_Node {
             foreach ($this->children as $child) {
                 $out .= $child->get();
             }
+        } else {
+            $ident = '';
         }
 
-        $out .= '</' . $this->name . ">\n";
-
+        $out .= $ident . '</' . $this->name . ">\n";
+        $deep--;
         return $out;
     }
 
@@ -286,7 +292,7 @@ class XML_Tree_Node {
         $this->content = $this->_xml_entities($content);
     }
 
-    function set_content(&$content) 
+    function set_content(&$content)
     {
         return $this->setContent(&$content);
     }
