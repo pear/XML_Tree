@@ -16,6 +16,7 @@
 // | Authors: Bernd Römer <berndr@bonn.edu>                               |
 // |          Sebastian Bergmann <sb@sebastian-bergmann.de>               |
 // |          Tomas V.V.Cox <cox@idecnet.com> (tree mapping from xml file)|
+// |          Michele Manzato <michele.manzato@verona.miz.it>             |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -89,24 +90,37 @@ class XML_Tree extends XML_Parser
     * @param  string  Filename
     * @param  string  XML Version
     */
-    function XML_Tree($filename = '', $version = '1.0') {
+    function XML_Tree($filename = '', $version = '1.0')
+    {
         $this->filename = $filename;
         $this->version  = $version;
+    }
+
+    /**
+    * Return the root XML_Tree_Node.
+    *
+    * @access public
+    */
+    function &getRoot()
+    {
+        if (!is_null($this->root)) {
+            return $this->root;
+        } else {
+            return $this->raiseError("No root");
+        }
     }
 
     /**
     * Add root node.
     *
     * @param  string  $name          name of root element
-    * @param  string  $content       content (text) for new node
-    * @param  array   $attributes    attribute-hash for new node
-    *
     * @return object XML_Tree_Node   reference to root node
     *
     * @access public
     */
-    function &addRoot($name, $content = '', $attributes = array()) {
-        $this->root = new XML_Tree_Node($name, $content, $attributes);
+    function &addRoot($name, $content = '', $attributes = array())
+    {
+        $this->root = &new XML_Tree_Node($name, $content, $attributes);
         return $this->root;
     }
 
@@ -130,16 +144,18 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree_Node inserted child (node)
     * @access public
     */
-    function &insertChild($path,$pos,$child, $content = '', $attributes = array()) {
+    function &insertChild($path,$pos,$child, $content = '', $attributes = array())
+    {
         // update namespace to maintain namespace integrity
         $count=count($path);
-        foreach($this->namespace as $key => $val) {
-            if ((array_slice($val,0,$count)==$path) && ($val[$count]>=$pos))
+        foreach ($this->namespace as $key => $val) {
+            if ((array_slice($val,0,$count)==$path) && ($val[$count]>=$pos)) {
                 $this->namespace[$key][$count]++;
+            }
         }
 
-        $parent=&$this->get_node_by_path($path);
-        return($parent->insert_child($pos,$child,$content,$attributes));
+        $parent = &$this->get_node_by_path($path);
+        return $parent->insertChild($pos,$child,$content,$attributes);
     }
 
     /**
@@ -159,14 +175,19 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree_Node parent whichs child was removed
     * @access public
     */
-    function &removeChild($path,$pos) {
+    function &removeChild($path,$pos)
+    {
         // update namespace to maintain namespace integrity
         $count=count($path);
         foreach($this->namespace as $key => $val) {
             if (array_slice($val,0,$count)==$path) {
-                if ($val[$count]==$pos) { unset($this->namespace[$key]); break; }
-                if ($val[$count]>$pos)
+                if ($val[$count]==$pos) {
+                    unset($this->namespace[$key]);
+                    break;
+                }
+                if ($val[$count]>$pos) {
                     $this->namespace[$key][$count]--;
+                }
             }
         }
 
@@ -203,7 +224,7 @@ class XML_Tree extends XML_Parser
         return $this->root;
     }
 
-    function &getTreeFromString($str)
+    function getTreeFromString($str)
     {
         $this->folding = false;
         $this->XML_Parser(null, 'event');
@@ -228,7 +249,7 @@ class XML_Tree extends XML_Parser
     {
         // root elem
         if (!isset($this->i)) {
-            $this->obj1 =& $this->add_root($elem, null, $attribs);
+            $this->obj1 =& $this->addRoot($elem, null, $attribs);
             $this->i = 2;
         } else {
             // mixed contents
@@ -265,7 +286,7 @@ class XML_Tree extends XML_Parser
                     $node->children[] = &new XML_Tree_Node(null, $this->cdata);
                 }
             } else {
-                $node->set_content($this->cdata);
+                $node->setContent($this->cdata);
             }
             $parent_id = 'obj' . ($this->i - 1);
             $parent    =& $this->$parent_id;
@@ -286,7 +307,7 @@ class XML_Tree extends XML_Parser
     */
     function cdataHandler($xp, $data)
     {
-        if (trim($data) != '') {
+        if (trim($data)) {
             $this->cdata .= $data;
         }
     }
@@ -297,25 +318,32 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree
     * @access public
     */
-    function clone() {
-        $clone=new XML_Tree($this->filename,$this->version);
-        $clone->root=$this->root->clone();
+    function clone()
+    {
+        $clone = &new XML_Tree($this->filename,$this->version);
+        $clone->root = $this->root->clone();
 
         // clone all other vars
         $temp=get_object_vars($this);
-        foreach($temp as $varname => $value)
-            if (!in_array($varname,array('filename','version','root')))
-                $clone->$varname=$value;
-
-        return($clone);
+        foreach($temp as $varname => $value) {
+            if (!in_array($varname, array('filename','version','root'))) {
+                $clone->$varname = $value;
+            }
+        }
+        return $clone;
     }
 
     /**
-    * Print text representation of XML tree.
+    * Print text representation of XML tree. If $xmlHeader is true then
+    * generate also the addtional XML header directive (nice for debugging).
     *
     * @access public
     */
-    function dump() {
+    function dump($xmlHeader = false)
+    {
+        if ($xmlHeader) {
+            header('Content-type: text/xml');
+        }
         echo $this->get();
     }
 
@@ -325,10 +353,17 @@ class XML_Tree extends XML_Parser
     * @return  string  XML
     * @access public
     */
-    function &get() {
+    function &get()
+    {
         $out = '<?xml version="' . $this->version . "\"?>\n";
-        $out .= $this->root->get();
-
+        if (!is_null($this->root)) {
+            if (!is_object($this->root) ||
+                (get_class($this->root) != 'xml_tree_node'))
+            {
+                return $this->raiseError("Bad XML root node");
+            }
+            $out .= $this->root->get();
+        }
         return $out;
     }
 
@@ -340,8 +375,9 @@ class XML_Tree extends XML_Parser
     *
     * @access public
     */
-    function &getName($name) {
-        return $this->root->get_element($this->namespace[$name]);
+    function &getName($name)
+    {
+        return $this->root->getElement($this->namespace[$name]);
     }
 
     /**
@@ -359,7 +395,8 @@ class XML_Tree extends XML_Parser
     *
     * @access public
     */
-    function registerName($name, $path) {
+    function registerName($name, $path)
+    {
         $this->namespace[$name] = $path;
     }
 
@@ -368,6 +405,48 @@ class XML_Tree extends XML_Parser
     */
     function register_name($name, $path) {
         return $this->registerName($name, $path);
+    }
+
+    /**
+    * Get a reference to a node. Node is searched by its 'path'.
+    *
+    * @param  mixed   Path to node. Can be either a string (slash-separated
+    *   children names) or an array (sequence of children names) both
+    *   of them starting from node. Note that the first name in sequence
+    *   must be the name of the document root.
+    * @return object  reference to the XML_Tree_Node found, or PEAR_Error if
+    *   the path does not exist. If more than one element matches then only
+    *   the first match is returned.
+    * @access public
+    */
+    function &getNodeAt($path)
+    {
+        if (is_null($this->root)) {
+            return $this->raiseError("XML_Tree hasn't a root node");
+        }
+
+        if (is_string($path)) {
+            $path = explode("/", $path);
+        }
+
+        if (sizeof($path) == 0) {
+            return $this->raiseError("Path to node is empty");
+        }
+
+        $path1 = $path;
+        $rootName = array_shift($path1);
+
+        if ($this->root->name != $rootName) {
+            return $this->raiseError("Path does not match the document root");
+        }
+
+        $x =& $this->root->getNodeAt($path1);
+
+        if (!PEAR::isError($x)) {
+            return $x;
+        }
+        // No node with that name found
+        return $this->raiseError("Bad path to node: [".implode('/', $path)."]");
     }
 }
 ?>
