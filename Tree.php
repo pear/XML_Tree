@@ -179,6 +179,19 @@ class XML_Tree extends XML_Parser
         return $this->root;
     }
 
+    function getTreeFromString($str)
+    {
+        $this->folding = false;
+        $this->XML_Parser(null, 'event');
+        $this->cdata = null;
+        $this->store_cdata = false;
+        $err = $this->parseString($str);
+        if (PEAR::isError($err)) {
+            return $err;
+        }
+        return $this->root;
+    }
+
     /**
     * Handler for the xml-data
     *
