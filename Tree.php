@@ -43,8 +43,8 @@ require_once 'XML/Tree/Node.php';
 *    $tree->dump();
 *
 * @author  Bernd Römer <berndr@bonn.edu>
-* @package XML_Tree
-* @version 1.0  16-Aug-2001
+* @package XML
+* @version $Version$ - 1.0
 */
 class XML_Tree extends XML_Parser
 {
@@ -72,7 +72,7 @@ class XML_Tree extends XML_Parser
     /**
     * Root
     *
-    * @var  object
+    * @var  object XML_Tree_Node
     */
     var $root = NULL;
 
@@ -96,8 +96,10 @@ class XML_Tree extends XML_Parser
     /**
     * Add root node.
     *
-    * @param  string  name of root element
-    * @return object  reference to root node
+    * @param  string  $name     name of root element
+    * @return object XML_Tree_Node   reference to root node
+    * 
+    * @access public
     */
     function &add_root($name) {
         $this->root = new XML_Tree_Node($name);
@@ -108,13 +110,14 @@ class XML_Tree extends XML_Parser
     * inserts a child/tree (child) into tree ($path,$pos) and 
     * maintains namespace integrity
     *
-    * @param array path path to parent of child to remove
-    * @param integer pos position of child to be inserted in its parents children-list
-    * @param mixed child child-node (by XML_Tree,XML_Node or Name)
-    * @param string content content (text) for new node
-    * @param array attributes attribute-hash for new node
+    * @param array      $path           path to parent of child to remove
+    * @param integer    $pos            position of child to be inserted in its parents children-list
+    * @param mixed      $child          child-node (by XML_Tree,XML_Node or Name)
+    * @param string     $content        content (text) for new node
+    * @param array      $attributes     attribute-hash for new node
     *
-    * @return object inserted child (node)
+    * @return object XML_Tree_Node inserted child (node)
+    * @access public    
     */    
     function &insert_child($path,$pos,$child, $content = '', $attributes = array()) {
         // update namespace to maintain namespace integrity
@@ -132,10 +135,11 @@ class XML_Tree extends XML_Parser
     * removes a child ($path,$pos) from tree ($path,$pos) and 
     * maintains namespace integrity
     *
-    * @param array path path to parent of child to remove
-    * @param integer pos position of child in parents children-list
+    * @param array      $path   path to parent of child to remove
+    * @param integer    $pos    position of child in parents children-list
     *
-    * @return object parent whichs child was removed
+    * @return object XML_Tree_Node parent whichs child was removed
+    * @access public    
     */    
     function &remove_child($path,$pos) {
         // update namespace to maintain namespace integrity
@@ -155,7 +159,8 @@ class XML_Tree extends XML_Parser
     /*
     * Maps a xml file to a objects tree
     *
-    * @return object The objects tree or an Pear error
+    * @return mixed The objects tree (XML_tree or an Pear error)
+    * @access public    
     */
     function &getTreeFromFile ()
     {
@@ -174,6 +179,15 @@ class XML_Tree extends XML_Parser
         return $this->root;
     }
 
+    /**
+    * Handler for the xml-data
+    *
+    * @param mixed  $xp         ignored
+    * @param string $elem       name of the element
+    * @param array  $attribs    attributes for the generated node
+    *
+    * @access private    
+    */
     function StartHandler($xp, $elem, &$attribs)
     {
         // root elem
@@ -188,6 +202,14 @@ class XML_Tree extends XML_Parser
         return NULL;
     }
 
+    /**
+    * Handler for the xml-data
+    *
+    * @param mixed  $xp         ignored
+    * @param string $elem       name of the element
+    *
+    * @access private    
+    */
     function EndHandler($xp, $elem)
     {
         $this->i--;
@@ -208,6 +230,11 @@ class XML_Tree extends XML_Parser
 
     /*
     * The xml character data handler
+    *
+    * @param mixed  $xp         ignored
+    * @param string $data       PCDATA between tags    
+    *
+    * @access private    
     */
     function cdataHandler($xp, $data)
     {
@@ -221,6 +248,7 @@ class XML_Tree extends XML_Parser
     * Get a copy of this tree.
     *
     * @return object XML_Tree
+    * @access public    
     */
     function clone() {
         $clone=new XML_Tree($this->filename,$this->version);
@@ -237,6 +265,8 @@ class XML_Tree extends XML_Parser
 
     /**
     * Print text representation of XML tree.
+    *
+    * @access public    
     */
     function dump() {
         echo $this->get();
@@ -246,6 +276,7 @@ class XML_Tree extends XML_Parser
     * Get text representation of XML tree.
     *
     * @return  string  XML
+    * @access public    
     */
     function &get() {
         $out = '<?xml version="' . $this->version . "\"?>\n";
@@ -257,8 +288,10 @@ class XML_Tree extends XML_Parser
     /**
     * Get current namespace.
     *
-    * @param  string  namespace
+    * @param  string  $name namespace
     * @return string
+    *
+    * @access public    
     */
     function &get_name($name) {
         return $this->root->get_element($this->namespace[$name]);
@@ -267,8 +300,10 @@ class XML_Tree extends XML_Parser
     /**
     * Register a namespace.
     *
-    * @param  string  namespace
-    * @param  string  path
+    * @param  string  $name namespace
+    * @param  string  $path path
+    *    
+    * @access public    
     */
     function register_name($name, $path) {
         $this->namespace[$name] = $path;
