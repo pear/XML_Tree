@@ -1,19 +1,10 @@
 <?php
 require_once 'PEAR/PackageFileManager.php';
 
-$version = '2.0RC1';
+$version = '2.0.0RC2';
 $notes = <<<EOT
-*** Minor BC Breakages Have Occured ***
-
-* Fixes all known bugs:
-#89, #766, #905, #1125, #1253, #1414, #492, #555, #1238
-
-* Returns PEAR_Error objects if an invalid element/attribute name is given (BC Break)
-
-* \$object->error contains PEAR_Error if an error occurs, should be checked when creating the root element
-
-* Added the ability to encapsulate all CDATA in <![CDATA[]]> Sections (see XML_Tree::useCdataSections()) or a specific
-node's CDATA using the new argument to XML_Tree_Node::XML_Tree_Node() and XML_Tree_Node::addChild())
+Fixed XML_Tree::isValidName() when adding a CDATA childNode.
+Dependencies like XML_DTD should now work again.
 EOT;
 
 $description =<<<EOT
