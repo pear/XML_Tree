@@ -15,7 +15,7 @@
 // +----------------------------------------------------------------------+
 // | Authors: Bernd Römer <berndr@bonn.edu>                               |
 // |          Sebastian Bergmann <sb@sebastian-bergmann.de>               |
-// |          Tomas V.V.Cox <cox@idecnet.com> (tree mapping from xml file)|
+// |          Tomas V.V.Cox <cox@idecnet.com>                             |
 // |          Michele Manzato <michele.manzato@verona.miz.it>             |
 // +----------------------------------------------------------------------+
 //
@@ -125,13 +125,6 @@ class XML_Tree extends XML_Parser
     }
 
     /**
-    * @deprecated
-    */
-    function &add_root($name, $content = '', $attributes = array()) {
-        return $this->addRoot($name, $content, $attributes);
-    }
-
-    /**
     * Inserts a child/tree (child) into tree ($path,$pos) and maintains
     * namespace integrity
     *
@@ -169,13 +162,6 @@ class XML_Tree extends XML_Parser
             }
         }
         return $x;
-    }
-
-    /**
-    * @deprecated
-    */
-    function &insert_child($path,$pos,$child, $content = '', $attributes = array()) {
-        return $this->insertChild($path, $child, $content, $attributes);
     }
 
     /*
@@ -216,13 +202,6 @@ class XML_Tree extends XML_Parser
         }
 
         return $x;
-    }
-
-    /**
-    * @deprecated
-    */
-    function &remove_child($path, $pos) {
-        return $this->removeChild($path, $pos);
     }
 
     /*
@@ -416,13 +395,6 @@ class XML_Tree extends XML_Parser
     }
 
     /**
-    * @deprecated
-    */
-    function &get_name($name) {
-        return $this->getName($name);
-    }
-
-    /**
     * Register a namespace.
     *
     * @param  string  $name namespace
@@ -435,19 +407,12 @@ class XML_Tree extends XML_Parser
     }
 
     /**
-    * @deprecated
-    */
-    function register_name($name, $path) {
-        return $this->registerName($name, $path);
-    }
-
-    /**
     * Get a reference to a node. Node is searched by its 'path'.
     *
-    * @param mixed  path    Path to node. Can be either a string (slash-separated
-    *   children names) or an array (sequence of children names) both
-    *   of them starting from node. Note that the first name in sequence
-    *   must be the name of the document root.
+    * @param mixed  path  Path to node. Can be either a string (slash-separated
+    *                     children names) or an array (sequence of children names) both
+    *                     of them starting from node. Note that the first name in sequence
+    *                     must be the name of the document root.
     * @return object    Reference to the XML_Tree_Node found, or PEAR_Error if
     *                   the path does not exist. If more than one element matches
     *                   then only the first match is returned.

@@ -5,7 +5,7 @@
   <name>XML_Tree</name>
   <summary>Represent XML data in a tree structure</summary>
   <description>
-    Allows for the building of XML data structures using a tree 
+    Allows for the building of XML data structures using a tree
     representation, without the need for an extension like DOMXML.
   </description>
   <maintainers>
@@ -23,23 +23,35 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.2</version>
-    <date>2003-07-10</date>
+    <version>2.0b1</version>
+    <date>2003-09-11</date>
     <license>PHP</license>
-    <state>stable</state>
+    <state>beta</state>
     <notes>
+Contributed by Michele Manzato &lt;Michele.Manzato@verona.miz.it&gt;:
+
 - Fixed insertChild() and removeChild()
 - Added getNodeAt() (gets a node by its path)
 - Added decodeXmlEntities()
 - Improved PHPDoc
 
-Contributed by Michele Manzato &lt;Michele.Manzato@verona.miz.it&gt;
+Others:
+
+- Added new "lineno" to the XML_Tree_Node object, containing the
+  line number of the input where a node is declared. (cox)
+- Removed deprecated methods in the form xxx_yyyy() like
+  add_child(), get_element(), etc. Only the PEAR CS compilant
+  ones should be used now addChild(), getElement(), etc. (cox)
+
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="XML">
         <file role="php" name="Tree.php"/>
-        <dir name="Tree"> 
+        <dir name="Tree">
           <file role="php" name="Node.php"/>
+        </dir>
+        <dir name="tests">
+            <file role="test" name="test.php"/>
         </dir>
       </dir>
     </filelist>

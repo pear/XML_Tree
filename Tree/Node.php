@@ -105,13 +105,6 @@ class XML_Tree_Node {
     }
 
     /**
-    * @deprecated
-    */
-    function &add_child($child, $content = '', $attributes = array()) {
-        return $this->addChild($child, $content, $attributes);
-    }
-
-    /**
     * Get a copy of this node by clone this node and all of its children,
     * recursively.
     *
@@ -200,13 +193,6 @@ class XML_Tree_Node {
     }
 
     /**
-    * @deprecated
-    */
-    function &insert_child($path,$pos,&$child, $content = '', $attributes = array()) {
-        return $this->insertChild($path,$pos,$child, $content, $attributes);
-    }
-
-    /**
     * Removes child at a given position
     *
     * @param    integer     pos     position of child to remove in children-list.
@@ -224,13 +210,6 @@ class XML_Tree_Node {
 
         // Using array_splice() instead of a simple unset() to maintain index-integrity
         return array_splice($this->children, $pos, 1);
-    }
-
-    /**
-    * @deprecated
-    */
-    function &remove_child($pos) {
-        return $this->removeChild($pos);
     }
 
     /**
@@ -297,13 +276,6 @@ class XML_Tree_Node {
     }
 
     /**
-    * @deprecated
-    */
-    function get_attribute($name) {
-        return $this->getAttribute($name);
-    }
-
-    /**
     * Sets an attribute for this node.
     *
     * @param  string    name        Name of attribute to set
@@ -314,14 +286,6 @@ class XML_Tree_Node {
     function setAttribute($name, $value = '')
     {
         $this->attributes[strtolower($name)] = $value;
-    }
-
-    /**
-    * @deprecated
-    */
-    function set_attribute($name, $value = '')
-    {
-        return $this->setAttribute($name, $value);
     }
 
     /**
@@ -339,14 +303,6 @@ class XML_Tree_Node {
     }
 
     /**
-    * @deprecated
-    */
-    function unset_attribute($name)
-    {
-        return $this->unsetAttribute($name);
-    }
-
-    /**
     * Sets the content for this node.
     *
     * @param  string    content     Node content to assign
@@ -356,14 +312,6 @@ class XML_Tree_Node {
     function setContent(&$content)
     {
         $this->content = $this->encodeXmlEntities($content);
-    }
-
-    /**
-    * @deprecated
-    */
-    function set_content(&$content)
-    {
-        return $this->setContent($content);
     }
 
     /**
@@ -441,14 +389,6 @@ class XML_Tree_Node {
 
         // No node with that name found
         return new PEAR_Error("Bad path to node: [".implode('/', $path)."]");
-    }
-
-    /**
-    * @deprecated
-    */
-    function &get_element($path)
-    {
-        return $this->getElement($path);
     }
 
     /**
