@@ -252,7 +252,7 @@ class XML_Tree_Node {
 
         $next = array_shift($path);
 
-        return $this->children[$next]->get_element($path);
+        return $this->children[$next]->getElement($path);
     }
 
     /**
