@@ -78,6 +78,14 @@ class XML_Tree_Node {
      */
 
     var $error = null;
+    
+    /**
+     * Whether to encapsulate the CDATA in a <![CDATA[]]> section
+     *
+     * @var boolean
+     */
+     
+    var $use_cdata_section = null;
      
     
     /**
@@ -88,7 +96,7 @@ class XML_Tree_Node {
     * @param  array     attributes      Attribute-hash for the node
     */
 
-    function XML_Tree_Node($name, $content = '', $attributes = array(), $lineno = null)
+    function XML_Tree_Node($name, $content = '', $attributes = array(), $lineno = null, $use_cdata_section = null)
     {
         $check_name = XML_Tree::isValidName($name, 'element');
         if (PEAR::isError($check_name)) {
@@ -103,7 +111,7 @@ class XML_Tree_Node {
             }
         }
         $this->name = $name;
-        $this->setContent($content);
+        $this->setContent($content, $use_cdata_section);
         $this->attributes = $attributes;
         $this->children   = array();
         $this->lineno     = $lineno;
@@ -122,7 +130,7 @@ class XML_Tree_Node {
     * @access public
     */
 
-    function &addChild($child, $content = '', $attributes = array(), $lineno = null)
+    function &addChild($child, $content = '', $attributes = array(), $lineno = null, $use_cdata_section = null)
     {
         $index = sizeof($this->children);
 
@@ -135,7 +143,7 @@ class XML_Tree_Node {
                 $this->children[$index] = $child->root->getElement();
             }
         } else {
-            $node = new XML_Tree_Node($child, $content, $attributes, $lineno);
+            $node = new XML_Tree_Node($child, $content, $attributes, $lineno, $use_cdata_section);
             if (PEAR::isError($node->error)) {
                 return $node->error;
             }
@@ -279,7 +287,7 @@ class XML_Tree_Node {
     * @access public
     */
 
-    function &get()
+    function &get($use_cdata_section = false)
     {
         static $deep = -1;
         static $do_ident = true;
@@ -310,13 +318,22 @@ class XML_Tree_Node {
                 $out .= ' />';
                 $empty = true;
             } else {
-                $out .= '>' . $this->content;
+                $out .= '>';
+                if ($this->use_cdata_section == true || ($use_cdata_section == true && $this->use_cdata_section !== false)) {
+                    if (trim($this->content) != '') {
+                        $out .= '<![CDATA[' .$this->content. ']]>';
+                    } else {
+                        $out .= $this->content;
+                    }
+                } else {
+                    $out .= $this->content;
+                }
             }
             
             if (sizeof($this->children) > 0) {
                 $out .= "\n";
                 foreach ($this->children as $child) {
-                    $out .= $child->get();
+                    $out .= $child->get($use_cdata_section);
                 }
             } else {
                 $ident = '';
@@ -390,9 +407,15 @@ class XML_Tree_Node {
     * @access public
     */
 
-    function setContent(&$content)
+    function setContent($content, $use_cdata_section = false)
     {
-        $this->content = $this->encodeXmlEntities($content);
+        $this->use_cdata_section = $use_cdata_section;
+        
+        if ($use_cdata_section == true) {
+            $this->content = $content;
+        } else {
+            $this->content = $this->encodeXmlEntities($content);
+        }
     }
 
     /**

@@ -82,6 +82,14 @@ class XML_Tree extends XML_Parser
     * @var  string
     */
     var $version = '1.0';
+    
+    /**
+     * Whether to encapsulate the all CDATA in a <![CDATA[]]> section
+     *
+     * @var boolean
+     */
+     
+    var $use_cdata_sections = false;
 
     /**
     * Constructor
@@ -94,6 +102,17 @@ class XML_Tree extends XML_Parser
         $this->filename = $filename;
         $this->version  = $version;
     }
+    
+    /**
+     * Use <![CDATA[]]> for all CDATA sections
+     *
+     * @return void
+     */
+     
+    function useCdataSections()
+    {
+        $this->use_cdata_sections = true;
+    }    
 
     /**
     * Gets the root node
@@ -369,7 +388,7 @@ class XML_Tree extends XML_Parser
         if ($xmlHeader) {
             header('Content-type: text/xml');
         }
-        echo $this->get();
+        echo $this->get($this->use_cdata_sections);
     }
 
     /**
@@ -381,11 +400,12 @@ class XML_Tree extends XML_Parser
     function &get()
     {
         $out = '<?xml version="' . $this->version . "\"?>\n";
+
         if (!is_null($this->root))
         {
             if(!is_object($this->root) || (strtolower(get_class($this->root)) != 'xml_tree_node'))
             return $this->raiseError("Bad XML root node");
-            $out .= $this->root->get();
+            $out .= $this->root->get($this->use_cdata_sections);
         }
         return $out;
     }
