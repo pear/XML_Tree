@@ -15,6 +15,12 @@
       <name>Bernd Römer</name>
       <email>bernd@php.net</email>
     </maintainer>
+    <maintainer>
+      <user>cox</user>
+      <name>Tomas V.V.Cox</name>
+      <email>cox@idecnet.com</email>
+      <role>developer</role>
+    </maintainer>
   </maintainers>
   <release>
     <version>1.0</version>
