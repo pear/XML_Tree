@@ -9,9 +9,9 @@
   representation, without the need for an extension like DOMXML.
  </description>
  <maintainer>
-  <user>sebastian</user>
-  <name>Sebastian Bergmann</name>
-  <email>sb@sebastian-bergmann.de</email>
+  <user>bernd</user>
+  <name>Bernd Römer</name>
+  <email>bernd@php.net</email>
  </maintainer>
  <release>
   <version>1.0</version>
