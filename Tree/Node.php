@@ -64,12 +64,13 @@ class XML_Tree_Node {
     * @param  string    content         Node content (text)
     * @param  array     attributes      Attribute-hash for the node
     */
-    function XML_Tree_Node($name, $content = '', $attributes = array())
+    function XML_Tree_Node($name, $content = '', $attributes = array(), $lineno)
     {
         $this->name = $name;
         $this->setContent($content);
         $this->attributes = $attributes;
         $this->children   = array();
+        $this->lineno     = $lineno;
     }
 
     /**

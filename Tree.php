@@ -118,9 +118,9 @@ class XML_Tree extends XML_Parser
     * @return object XML_Tree_Node   Reference to the newly created root node
     * @access public
     */
-    function &addRoot($name, $content = '', $attributes = array())
+    function &addRoot($name, $content = '', $attributes = array(), $lineno)
     {
-        $this->root = new XML_Tree_Node($name, $content, $attributes);
+        $this->root = new XML_Tree_Node($name, $content, $attributes, $lineno);
         return $this->root;
     }
 
@@ -277,19 +277,20 @@ class XML_Tree extends XML_Parser
     */
     function startHandler($xp, $elem, &$attribs)
     {
+        $lineno = xml_get_current_line_number($xp);
         // root elem
         if (!isset($this->i)) {
-            $this->obj1 =& $this->add_root($elem, null, $attribs);
+            $this->obj1 =& $this->add_root($elem, null, $attribs, $lineno);
             $this->i = 2;
         } else {
             // mixed contents
             if (!empty($this->cdata)) {
                 $parent_id = 'obj' . ($this->i - 1);
                 $parent    =& $this->$parent_id;
-                $parent->children[] = &new XML_Tree_Node(null, $this->cdata);
+                $parent->children[] = &new XML_Tree_Node(null, $this->cdata, null, $lineno);
             }
             $obj_id = 'obj' . $this->i++;
-            $this->$obj_id = &new XML_Tree_Node($elem, null, $attribs);
+            $this->$obj_id = &new XML_Tree_Node($elem, null, $attribs, $lineno);
         }
         $this->cdata = null;
         return null;
