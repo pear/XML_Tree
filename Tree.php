@@ -203,7 +203,7 @@ class XML_Tree extends XML_Parser
         return $this->root;
     }
 
-    function getTreeFromString($str)
+    function &getTreeFromString($str)
     {
         $this->folding = false;
         $this->XML_Parser(null, 'event');
@@ -286,7 +286,7 @@ class XML_Tree extends XML_Parser
     */
     function cdataHandler($xp, $data)
     {
-        if (trim($data)) {
+        if (trim($data) != '') {
             $this->cdata .= $data;
         }
     }
