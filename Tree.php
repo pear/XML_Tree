@@ -22,7 +22,7 @@
 //
 
 require_once 'XML/Parser.php';
-require_once 'XML/Tree/Node.php';
+require_once 'XML_Tree/Tree/Node.php';
 
 /**
 * PEAR::XML_Tree
