@@ -23,30 +23,19 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>2.0b1</version>
-    <date>2003-09-11</date>
+    <version>2.0b2</version>
+    <date>2003-09-18</date>
     <license>PHP</license>
     <state>beta</state>
     <notes>
-Contributed by Michele Manzato &lt;Michele.Manzato@verona.miz.it&gt;:
-
-- Fixed insertChild() and removeChild()
-- Added getNodeAt() (gets a node by its path)
-- Added decodeXmlEntities()
-- Improved PHPDoc
-
-Others:
-
-- Added new "lineno" to the XML_Tree_Node object, containing the
-  line number of the input where a node is declared. (cox)
-- Removed deprecated methods in the form xxx_yyyy() like
-  add_child(), get_element(), etc. Only the PEAR CS compilant
-  ones should be used now addChild(), getElement(), etc. (cox)
-
+- Repaired 2 old method calls for add_root() and set_contents()
+- Added getElementsByTagName() (by Pierre)
+- Added a README.txt
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="XML">
         <file role="php" name="Tree.php"/>
+        <file role="doc" name="README.txt"/>
         <dir name="Tree">
           <file role="php" name="Node.php"/>
         </dir>
