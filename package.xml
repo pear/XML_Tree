@@ -21,10 +21,10 @@
  </Release>
  <FileList>
   <Dir Name="/" BaseInstallDir="XML">
-   <File Role="php">Tree.php</File>
-    <Dir Name="Tree">
-     <File Role="php">Node.php</File>
+    <File Role="php">Tree.php</File>
+    <Dir Name="Tree"> 
+      <File Role="php">Node.php</File>
     </Dir>
-   </Dir>
-  </FileList>
+  </Dir>
+ </FileList>
 </Package>
