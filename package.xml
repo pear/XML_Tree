@@ -23,12 +23,18 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.0</version>
-    <date>2001-08-16</date>
+    <version>1.1</version>
+    <date>2002-05-16</date>
     <license>PHP 2.02</license>
     <state>stable</state>
     <notes>
-      This is the initial independent PEAR release.
+- Added support for mixed element content (cox)
+- Added identation for $node->get() (cox)
+- Adapted API to PEAR coding standars (mj)
+- Added getTreeFromString() (cox)
+- Root node now stores attributes (mj, cox)
+- Improved clone(), added insert_child() and remove_child() (bernd)
+(Backwards compatibility preserved)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="XML">
