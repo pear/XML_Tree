@@ -47,33 +47,48 @@ require_once 'XML/Tree/Node.php';
 */
 class XML_Tree {
     /**
+    * File Handle
+    *
+    * @var  ressource
+    */
+    var $file = NULL;
+
+    /**
+    * Filename
+    *
+    * @var  string
+    */
+    var $filename = '';
+
+    /**
     * Namespace
     *
     * @var  array
     */
-    var $namespace;
+    var $namespace = array();
 
     /**
     * Root
     *
     * @var  object
     */
-    var $root;
+    var $root = NULL;
 
     /**
     * XML Version
     *
     * @var  string
     */
-    var $version;
+    var $version = '1.0';
 
     /**
     * Constructor
     *
     * @param  string  XML Version
     */
-    function XML_Tree($version = '1.0') {
-        $this->version = $version;
+    function XML_Tree($filename = '', $version = '1.0') {
+        $this->filename = $filename;
+        $this->version  = $version;
     }
 
     /**
@@ -133,6 +148,57 @@ class XML_Tree {
     */
     function register_name($name, $path) {
         $this->namespace[$name] = $path;
+    }
+
+    /**
+    * Read XML from a file.
+    *
+    * @param  string  filename
+    */
+    function read_file($filename = '') {
+        if ($this->_open_file($filename, 'r')) {
+            while ($data = @fread($this->fil, 4096)) {
+                // ...
+            }
+
+            @fclose($this->file);
+        }
+    }
+
+    /**
+    * Write XML to a file.
+    *
+    * @param  string  filename
+    */
+    function write_file($filename = '') {
+        if ($this->_open_file($filename, 'w')) {
+            @fputs($this->file, $this->get());
+            @fclose($this->file);
+        }
+    }
+
+    /**
+    * Open a file.
+    *
+    * @param  string  filename
+    * @param  string  mode
+    * @return boolean success
+    * @access private
+    */
+    function _open_file($filename, $mode) {
+        if (empty($filename)) {
+            if (!empty($this->filename)) {
+                $filename =& $this->filename;
+            } else {
+                return false;
+            }
+        }
+
+        if ($this->file = @fopen($filename, $mode)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 ?>
