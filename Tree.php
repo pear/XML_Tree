@@ -51,7 +51,7 @@ class XML_Tree extends XML_Parser
     /**
     * File Handle
     *
-    * @var  ressource
+    * @var  resource
     */
     var $file = NULL;
 
