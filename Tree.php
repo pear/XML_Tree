@@ -98,7 +98,7 @@ class XML_Tree extends XML_Parser
     *
     * @param  string  $name     name of root element
     * @return object XML_Tree_Node   reference to root node
-    * 
+    *
     * @access public
     */
     function &add_root($name, $content = '', $attributes = array()) {
@@ -107,7 +107,7 @@ class XML_Tree extends XML_Parser
     }
 
     /*
-    * inserts a child/tree (child) into tree ($path,$pos) and 
+    * inserts a child/tree (child) into tree ($path,$pos) and
     * maintains namespace integrity
     *
     * @param array      $path           path to parent of child to remove
@@ -117,8 +117,8 @@ class XML_Tree extends XML_Parser
     * @param array      $attributes     attribute-hash for new node
     *
     * @return object XML_Tree_Node inserted child (node)
-    * @access public    
-    */    
+    * @access public
+    */
     function &insert_child($path,$pos,$child, $content = '', $attributes = array()) {
         // update namespace to maintain namespace integrity
         $count=count($path);
@@ -132,15 +132,15 @@ class XML_Tree extends XML_Parser
     }
 
     /*
-    * removes a child ($path,$pos) from tree ($path,$pos) and 
+    * removes a child ($path,$pos) from tree ($path,$pos) and
     * maintains namespace integrity
     *
     * @param array      $path   path to parent of child to remove
     * @param integer    $pos    position of child in parents children-list
     *
     * @return object XML_Tree_Node parent whichs child was removed
-    * @access public    
-    */    
+    * @access public
+    */
     function &remove_child($path,$pos) {
         // update namespace to maintain namespace integrity
         $count=count($path);
@@ -160,7 +160,7 @@ class XML_Tree extends XML_Parser
     * Maps a xml file to a objects tree
     *
     * @return mixed The objects tree (XML_tree or an Pear error)
-    * @access public    
+    * @access public
     */
     function &getTreeFromFile ()
     {
@@ -186,7 +186,7 @@ class XML_Tree extends XML_Parser
     * @param string $elem       name of the element
     * @param array  $attribs    attributes for the generated node
     *
-    * @access private    
+    * @access private
     */
     function StartHandler($xp, $elem, &$attribs)
     {
@@ -208,7 +208,7 @@ class XML_Tree extends XML_Parser
     * @param mixed  $xp         ignored
     * @param string $elem       name of the element
     *
-    * @access private    
+    * @access private
     */
     function EndHandler($xp, $elem)
     {
@@ -232,9 +232,9 @@ class XML_Tree extends XML_Parser
     * The xml character data handler
     *
     * @param mixed  $xp         ignored
-    * @param string $data       PCDATA between tags    
+    * @param string $data       PCDATA between tags
     *
-    * @access private    
+    * @access private
     */
     function cdataHandler($xp, $data)
     {
@@ -248,7 +248,7 @@ class XML_Tree extends XML_Parser
     * Get a copy of this tree.
     *
     * @return object XML_Tree
-    * @access public    
+    * @access public
     */
     function clone() {
         $clone=new XML_Tree($this->filename,$this->version);
@@ -266,7 +266,7 @@ class XML_Tree extends XML_Parser
     /**
     * Print text representation of XML tree.
     *
-    * @access public    
+    * @access public
     */
     function dump() {
         echo $this->get();
@@ -276,7 +276,7 @@ class XML_Tree extends XML_Parser
     * Get text representation of XML tree.
     *
     * @return  string  XML
-    * @access public    
+    * @access public
     */
     function &get() {
         $out = '<?xml version="' . $this->version . "\"?>\n";
@@ -291,7 +291,7 @@ class XML_Tree extends XML_Parser
     * @param  string  $name namespace
     * @return string
     *
-    * @access public    
+    * @access public
     */
     function &get_name($name) {
         return $this->root->get_element($this->namespace[$name]);
@@ -302,8 +302,8 @@ class XML_Tree extends XML_Parser
     *
     * @param  string  $name namespace
     * @param  string  $path path
-    *    
-    * @access public    
+    *
+    * @access public
     */
     function register_name($name, $path) {
         $this->namespace[$name] = $path;
