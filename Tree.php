@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------+
 // | PEAR :: XML_Tree                                                     |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2003 The PHP Group                                |
+// | Copyright (c) 1997-2002 The PHP Group                                |
 // +----------------------------------------------------------------------+
 // | This source file is subject to version 2.02 of the PHP license,      |
 // | that is bundled with this package in the file LICENSE, and is        |
@@ -40,8 +40,7 @@ require_once 'XML/Tree/Node.php';
 *    $root =& $tree->addRoot('root');
 *    $foo  =& $root->addChild('foo');
 *
-*    header('Content-Type: text/xml');
-*    $tree->dump();
+*    $tree->dump(true);
 *
 * @author  Bernd Römer <berndr@bonn.edu>
 * @package XML
@@ -57,7 +56,7 @@ class XML_Tree extends XML_Parser
     var $file = NULL;
 
     /**
-    * Filename
+    * Filename from which the XML_Tree was read
     *
     * @var  string
     */
@@ -71,7 +70,7 @@ class XML_Tree extends XML_Parser
     var $namespace = array();
 
     /**
-    * Root
+    * Root node of the XML tree
     *
     * @var  object XML_Tree_Node
     */
@@ -87,8 +86,8 @@ class XML_Tree extends XML_Parser
     /**
     * Constructor
     *
-    * @param  string  Filename
-    * @param  string  XML Version
+    * @param  string  filename  Filename where to read the XML
+    * @param  string  version   XML Version to apply
     */
     function XML_Tree($filename = '', $version = '1.0')
     {
@@ -97,7 +96,9 @@ class XML_Tree extends XML_Parser
     }
 
     /**
-    * Return the root XML_Tree_Node.
+    * Gets the root node
+    *
+    * @return object    Root XML_Tree_Node, or PEAR_Error if there isn't any root node.
     *
     * @access public
     */
@@ -105,22 +106,21 @@ class XML_Tree extends XML_Parser
     {
         if (!is_null($this->root)) {
             return $this->root;
-        } else {
-            return $this->raiseError("No root");
         }
+        return $this->raiseError("No root");
     }
 
     /**
-    * Add root node.
+    * Sets the root node of the XML tree.
     *
-    * @param  string  $name          name of root element
-    * @return object XML_Tree_Node   reference to root node
+    * @param  string    name        Name of root element
     *
+    * @return object XML_Tree_Node   Reference to the newly created root node
     * @access public
     */
     function &addRoot($name, $content = '', $attributes = array())
     {
-        $this->root = &new XML_Tree_Node($name, $content, $attributes);
+        $this->root = new XML_Tree_Node($name, $content, $attributes);
         return $this->root;
     }
 
@@ -132,30 +132,43 @@ class XML_Tree extends XML_Parser
     }
 
     /**
-    * inserts a child/tree (child) into tree ($path,$pos) and
-    * maintains namespace integrity
+    * Inserts a child/tree (child) into tree ($path,$pos) and maintains
+    * namespace integrity
     *
-    * @param array      $path           path to parent of child to remove
-    * @param integer    $pos            position of child to be inserted in its parents children-list
-    * @param mixed      $child          child-node (by XML_Tree,XML_Node or Name)
-    * @param string     $content        content (text) for new node
-    * @param array      $attributes     attribute-hash for new node
+    * @param mixed      path            Path to parent node to add child (see
+    *                                   getNodeAt() for format)
+    * @param integer    pos             Position where to insert the new child.
+    *                                   0 < means |$pos| elements before the end,
+    *                                   e.g. -1 appends as last child.
+    * @param mixed      child           Child to insert (XML_Tree or XML_Tree_Node),
+    *                                   or name of child node
+    * @param string     content         Content (text) for the new node (only if
+    *                                   $child is the node name)
+    * @param array      attributes      Attribute-hash for new node
     *
-    * @return object XML_Tree_Node inserted child (node)
+    * @return object Reference to the inserted child (node), or PEAR_Error upon error
     * @access public
+    * @see getNodeAt()
     */
-    function &insertChild($path,$pos,$child, $content = '', $attributes = array())
+    function &insertChild($path, $pos, $child, $content = '', $attributes = array())
     {
-        // update namespace to maintain namespace integrity
-        $count=count($path);
-        foreach ($this->namespace as $key => $val) {
-            if ((array_slice($val,0,$count)==$path) && ($val[$count]>=$pos)) {
-                $this->namespace[$key][$count]++;
-            }
+        $parent =& $this->getNodeAt($path);
+        if (PEAR::isError($parent)) {
+            return $parent;
         }
 
-        $parent = &$this->get_node_by_path($path);
-        return $parent->insertChild($pos,$child,$content,$attributes);
+        $x =& $parent->insertChild(null, $pos, $child, $content, $attributes);
+
+        if (!PEAR::isError($x)) {
+        // update namespace to maintain namespace integrity
+            $count = count($path);
+            foreach ($this->namespace as $key => $val) {
+                if ((array_slice($val,0,$count)==$path) && ($val[$count]>=$pos)) {
+                    $this->namespace[$key][$count]++;
+                }
+            }
+        }
+        return $x;
     }
 
     /**
@@ -166,33 +179,43 @@ class XML_Tree extends XML_Parser
     }
 
     /*
-    * removes a child ($path,$pos) from tree ($path,$pos) and
-    * maintains namespace integrity
+    * Removes a child node from tree and maintains namespace integrity
     *
-    * @param array      $path   path to parent of child to remove
-    * @param integer    $pos    position of child in parents children-list
+    * @param array      path        Path to the parent of child to remove (see
+    *                               getNodeAt() for format)
+    * @param integer    pos         Position of child in parent children-list
+    *                               0 < means |$pos| elements before the end,
+    *                               e.g. -1 removes the last child.
     *
-    * @return object XML_Tree_Node parent whichs child was removed
+    * @return object    Parent XML_Tree_Node whose child was removed, or PEAR_Error upon error
     * @access public
+    * @see getNodeAt()
     */
-    function &removeChild($path,$pos)
+    function &removeChild($path, $pos)
     {
-        // update namespace to maintain namespace integrity
-        $count=count($path);
-        foreach($this->namespace as $key => $val) {
-            if (array_slice($val,0,$count)==$path) {
-                if ($val[$count]==$pos) {
-                    unset($this->namespace[$key]);
-                    break;
-                }
-                if ($val[$count]>$pos) {
-                    $this->namespace[$key][$count]--;
+        $parent =& $this->getNodeAt($path);
+        if (PEAR::isError($parent)) {
+            return $parent;
+        }
+
+        $x =& $parent->removeChild($pos);
+
+        if (!PEAR::isError($x)) {
+            // Update namespace to maintain namespace integrity
+            $count=count($path);
+            foreach($this->namespace as $key => $val) {
+                if (array_slice($val,0,$count)==$path) {
+                    if ($val[$count]==$pos) {
+                        unset($this->namespace[$key]); break;
+                    }
+                    if ($val[$count]>$pos) {
+                        $this->namespace[$key][$count]--;
+                    }
                 }
             }
         }
 
-        $parent=&$this->get_node_by_path($path);
-        return($parent->remove_child($pos));
+        return $x;
     }
 
     /**
@@ -203,9 +226,9 @@ class XML_Tree extends XML_Parser
     }
 
     /*
-    * Maps a xml file to a objects tree
+    * Maps a XML file to a XML_Tree
     *
-    * @return mixed The objects tree (XML_tree or an Pear error)
+    * @return mixed The XML tree root (an XML_Tree_Node), or PEAR_Error upon error.
     * @access public
     */
     function &getTreeFromFile ()
@@ -224,6 +247,12 @@ class XML_Tree extends XML_Parser
         return $this->root;
     }
 
+    /*
+    * Maps an XML string to an XML_Tree.
+    *
+    * @return mixed The XML tree root (an XML_Tree_Node), or PEAR_Error upon error.
+    * @access public
+    */
     function getTreeFromString($str)
     {
         $this->folding = false;
@@ -238,10 +267,11 @@ class XML_Tree extends XML_Parser
 
     /**
     * Handler for the xml-data
+    * Used by XML_Parser::XML_Parser() when parsing an XML stream.
     *
-    * @param mixed  $xp         ignored
-    * @param string $elem       name of the element
-    * @param array  $attribs    attributes for the generated node
+    * @param mixed  xp          ignored
+    * @param string elem        name of the element
+    * @param array  attribs     attributes for the generated node
     *
     * @access private
     */
@@ -249,7 +279,7 @@ class XML_Tree extends XML_Parser
     {
         // root elem
         if (!isset($this->i)) {
-            $this->obj1 =& $this->addRoot($elem, null, $attribs);
+            $this->obj1 =& $this->add_root($elem, null, $attribs);
             $this->i = 2;
         } else {
             // mixed contents
@@ -267,9 +297,10 @@ class XML_Tree extends XML_Parser
 
     /**
     * Handler for the xml-data
+    * Used by XML_Parser::XML_Parser() when parsing an XML stream.
     *
-    * @param mixed  $xp         ignored
-    * @param string $elem       name of the element
+    * @param mixed  xp          ignored
+    * @param string elem        name of the element
     *
     * @access private
     */
@@ -286,7 +317,7 @@ class XML_Tree extends XML_Parser
                     $node->children[] = &new XML_Tree_Node(null, $this->cdata);
                 }
             } else {
-                $node->setContent($this->cdata);
+                $node->set_content($this->cdata);
             }
             $parent_id = 'obj' . ($this->i - 1);
             $parent    =& $this->$parent_id;
@@ -299,9 +330,10 @@ class XML_Tree extends XML_Parser
 
     /*
     * The xml character data handler
+    * Used by XML_Parser::XML_Parser() when parsing an XML stream.
     *
-    * @param mixed  $xp         ignored
-    * @param string $data       PCDATA between tags
+    * @param mixed  xp          ignored
+    * @param string data        PCDATA between tags
     *
     * @access private
     */
@@ -313,29 +345,34 @@ class XML_Tree extends XML_Parser
     }
 
     /**
-    * Get a copy of this tree.
+    * Get a copy of this tree by cloning and all of its nodes, recursively.
     *
-    * @return object XML_Tree
+    * @return object XML_Tree copy of this node.
     * @access public
     */
     function clone()
     {
-        $clone = &new XML_Tree($this->filename,$this->version);
-        $clone->root = $this->root->clone();
+        $clone = new XML_Tree($this->filename, $this->version);
+        if (!is_null($this->root)) {
+            $clone->root = $this->root->clone();
+        }
 
         // clone all other vars
-        $temp=get_object_vars($this);
+        $temp = get_object_vars($this);
         foreach($temp as $varname => $value) {
-            if (!in_array($varname, array('filename','version','root'))) {
-                $clone->$varname = $value;
+            if (!in_array($varname,array('filename','version','root'))) {
+                $clone->$varname=$value;
             }
         }
         return $clone;
     }
 
     /**
-    * Print text representation of XML tree. If $xmlHeader is true then
-    * generate also the addtional XML header directive (nice for debugging).
+    * Print text representation of XML tree.
+    *
+    * @param bool xmlHeader     if true then generate also the leading XML
+    *                           'Content-type' header directive, e.g. for
+    *                           direct output to a web page.
     *
     * @access public
     */
@@ -350,18 +387,16 @@ class XML_Tree extends XML_Parser
     /**
     * Get text representation of XML tree.
     *
-    * @return  string  XML
+    * @return string  Text (XML) representation of the tree
     * @access public
     */
     function &get()
     {
         $out = '<?xml version="' . $this->version . "\"?>\n";
-        if (!is_null($this->root)) {
-            if (!is_object($this->root) ||
-                (get_class($this->root) != 'xml_tree_node'))
+        if (!is_null($this->root))
             {
+            if(!is_object($this->root) || (get_class($this->root) != 'xml_tree_node'))
                 return $this->raiseError("Bad XML root node");
-            }
             $out .= $this->root->get();
         }
         return $out;
@@ -370,13 +405,12 @@ class XML_Tree extends XML_Parser
     /**
     * Get current namespace.
     *
-    * @param  string  $name namespace
+    * @param  string  name  namespace
     * @return string
     *
     * @access public
     */
-    function &getName($name)
-    {
+    function &getName($name) {
         return $this->root->getElement($this->namespace[$name]);
     }
 
@@ -395,8 +429,7 @@ class XML_Tree extends XML_Parser
     *
     * @access public
     */
-    function registerName($name, $path)
-    {
+    function registerName($name, $path) {
         $this->namespace[$name] = $path;
     }
 
@@ -410,24 +443,23 @@ class XML_Tree extends XML_Parser
     /**
     * Get a reference to a node. Node is searched by its 'path'.
     *
-    * @param  mixed   Path to node. Can be either a string (slash-separated
+    * @param mixed  path    Path to node. Can be either a string (slash-separated
     *   children names) or an array (sequence of children names) both
     *   of them starting from node. Note that the first name in sequence
     *   must be the name of the document root.
-    * @return object  reference to the XML_Tree_Node found, or PEAR_Error if
-    *   the path does not exist. If more than one element matches then only
-    *   the first match is returned.
+    * @return object    Reference to the XML_Tree_Node found, or PEAR_Error if
+    *                   the path does not exist. If more than one element matches
+    *                   then only the first match is returned.
     * @access public
     */
     function &getNodeAt($path)
     {
-        if (is_null($this->root)) {
+        if (is_null($this->root)){
             return $this->raiseError("XML_Tree hasn't a root node");
         }
 
-        if (is_string($path)) {
+        if (is_string($path))
             $path = explode("/", $path);
-        }
 
         if (sizeof($path) == 0) {
             return $this->raiseError("Path to node is empty");
@@ -442,9 +474,9 @@ class XML_Tree extends XML_Parser
 
         $x =& $this->root->getNodeAt($path1);
 
-        if (!PEAR::isError($x)) {
+        if (!PEAR::isError($x))
             return $x;
-        }
+
         // No node with that name found
         return $this->raiseError("Bad path to node: [".implode('/', $path)."]");
     }
