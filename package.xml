@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
-<Package>
- <Name>XML_Tree</Name>
- <Summary>
+<package>
+ <name>XML_Tree</name>
+ <summary>
   Allows for the building of XML data structures using a tree 
   representation, without the need for an extension like DOMXML.
- </Summary>
- <Maintainer>
-  <Initials>SB</Initials>
-  <Name>Sebastian Bergmann</Name>
-  <Email>sb@sebastian-bergmann.de</Email>
- </Maintainer>
- <Release>
-  <Version>1.0</Version>
-  <Date>2001-08-16</Date>
-  <Notes>
+ </summary>
+ <maintainer>
+  <initials>SB</initials>
+  <name>Sebastian Bergmann</name>
+  <email>sb@sebastian-bergmann.de</email>
+ </maintainer>
+ <release>
+  <version>1.0</version>
+  <date>2001-08-16</date>
+  <notes>
    This is the initial independent PEAR release.
-  </Notes>
- </Release>
- <FileList>
-  <Dir Name="/" BaseInstallDir="XML">
-    <File Role="php">Tree.php</File>
-    <Dir Name="Tree"> 
-      <File Role="php">Node.php</File>
-    </Dir>
-  </Dir>
- </FileList>
-</Package>
+  </notes>
+ </release>
+ <filelist>
+  <dir name="/" baseinstalldir="XML">
+    <file role="php">Tree.php</file>
+    <dir name="Tree"> 
+      <file role="php">Node.php</file>
+    </dir>
+  </dir>
+ </filelist>
+</package>
