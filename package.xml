@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE package SYSTEM "../package.dtd">
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
-<package>
- <name>XML_Tree</name>
- <summary>Represent XML data in a tree structure</summary>
- <description>
-  Allows for the building of XML data structures using a tree 
-  representation, without the need for an extension like DOMXML.
- </description>
- <maintainer>
-  <user>bernd</user>
-  <name>Bernd Römer</name>
-  <email>bernd@php.net</email>
- </maintainer>
- <release>
-  <version>1.0</version>
-  <date>2001-08-16</date>
-  <notes>
-   This is the initial independent PEAR release.
-  </notes>
- </release>
- <filelist>
-  <dir name="/" baseinstalldir="XML">
-    <file role="php">Tree.php</file>
-    <dir name="Tree"> 
-      <file role="php">Node.php</file>
-    </dir>
-  </dir>
- </filelist>
+<package version="1.0">
+  <name>XML_Tree</name>
+  <summary>Represent XML data in a tree structure</summary>
+  <description>
+    Allows for the building of XML data structures using a tree 
+    representation, without the need for an extension like DOMXML.
+  </description>
+  <maintainers>
+    <maintainer>
+      <user>bernd</user>
+      <name>Bernd Römer</name>
+      <email>bernd@php.net</email>
+    </maintainer>
+  </maintainers>
+  <release>
+    <version>1.0</version>
+    <date>2001-08-16</date>
+    <notes>
+      This is the initial independent PEAR release.
+    </notes>
+    <filelist>
+      <dir name="/" baseinstalldir="XML">
+	<file role="php">Tree.php</file>
+	<dir name="Tree"> 
+	  <file role="php">Node.php</file>
+	</dir>
+      </dir>
+    </filelist>
+  </release>
 </package>
