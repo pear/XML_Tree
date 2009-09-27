@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
-http://pear.php.net/dtd/tasks-1.0.xsd
-http://pear.php.net/dtd/package-2.0
-http://pear.php.net/dtd/package-2.0.xsd">
+<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>XML_Tree</name>
  <channel>pear.php.net</channel>
  <summary>Represent XML data in a tree structure</summary>
  <description>Allows for the building of XML data structures using a tree
-representation, without the need for an extension like DOMXML.
- </description>
+representation, without the need for an extension like DOMXML.</description>
  <lead>
   <name>Bernd Römer</name>
   <user>bernd</user>
@@ -28,33 +24,28 @@ representation, without the need for an extension like DOMXML.
   <active>yes</active>
  </lead>
  <date>2009-09-27</date>
- <time>14:11:21</time>
+ <time>14:15:07</time>
  <version>
-  <release>2.0.0RC2</release>
-  <api>2.0.0RC2</api>
+  <release>2.0.0RC3</release>
+  <api>2.0.0</api>
  </version>
  <stability>
   <release>beta</release>
   <api>beta</api>
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
- <notes>Fixed XML_Tree::isValidName() when adding a CDATA childNode.
-Dependencies like XML_DTD should now work again.
- </notes>
+ <notes>QA Release
+Redid package structure
+Updated to package 2.0</notes>
  <contents>
-  <dir name="/">
-   <dir name="docs">
-    <dir name="examples">
-     <file baseinstalldir="XML" name="cdata_sections_1.php" role="doc" />
-     <file baseinstalldir="XML" name="error_handling_1.php" role="doc" />
-    </dir> <!-- /docs/examples -->
-   </dir> <!-- /docs -->
-   <dir name="Tree">
-    <file baseinstalldir="XML" name="Node.php" role="php" />
-   </dir> <!-- /Tree -->
-   <file baseinstalldir="XML" name="README.txt" role="data" />
-   <file baseinstalldir="XML" name="Tree.php" role="php" />
-  </dir> <!-- / -->
+  <dir baseinstalldir="/" name="/">
+   <file baseinstalldir="XML" md5sum="04937636653dc69c238e8be4cc9f804e" name="docs/examples/cdata_sections_1.php" role="doc" />
+   <file baseinstalldir="XML" md5sum="5de18c0ab4cf4e0e80d84d1a680a782e" name="docs/examples/error_handling_1.php" role="doc" />
+   <file baseinstalldir="/" md5sum="0d217a41fe663068d62ae6db8eec6bce" name="tests/test.php" role="test" />
+   <file baseinstalldir="/" md5sum="757606abd167281607fc97c96eadee1c" name="XML/Tree.php" role="php" />
+   <file baseinstalldir="/" md5sum="99ada47d4ac21f991d598c8f73de73c7" name="XML/Tree/Node.php" role="php" />
+   <file baseinstalldir="XML" md5sum="218ceef937359b4ae541d447d3ef6762" name="README.txt" role="data" />
+  </dir>
  </contents>
  <dependencies>
   <required>
@@ -81,18 +72,18 @@ Dependencies like XML_DTD should now work again.
  <changelog>
   <release>
    <version>
-    <release>2.0.0RC2</release>
-    <api>2.0.0RC2</api>
+    <release>2.0b2</release>
+    <api>2.0b2</api>
    </version>
    <stability>
     <release>beta</release>
     <api>beta</api>
    </stability>
-   <date>2004-05-29</date>
-   <license uri="http://www.php.net/license">PHP License</license>
-   <notes>Fixed XML_Tree::isValidName() when adding a CDATA childNode.
-Dependencies like XML_DTD should now work again.
-   </notes>
+   <date>2003-09-18</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>- Repaired 2 old method calls for add_root() and set_contents()
+- Added getElementsByTagName() (by Pierre)
+- Added a README.txt</notes>
   </release>
   <release>
    <version>
@@ -115,24 +106,36 @@ Dependencies like XML_DTD should now work again.
 * $object-&gt;error contains PEAR_Error if an error occurs, should be checked when creating the root element
 
 * Added the ability to encapsulate all CDATA in &lt;![CDATA[]]&gt; Sections (see XML_Tree::useCdataSections()) or a specific
-node&apos;s CDATA using the new argument to XML_Tree_Node::XML_Tree_Node() and XML_Tree_Node::addChild())
-   </notes>
+node&apos;s CDATA using the new argument to XML_Tree_Node::XML_Tree_Node() and XML_Tree_Node::addChild())</notes>
   </release>
   <release>
    <version>
-    <release>2.0b2</release>
-    <api>2.0b2</api>
+    <release>2.0.0RC2</release>
+    <api>2.0.0RC2</api>
    </version>
    <stability>
     <release>beta</release>
     <api>beta</api>
    </stability>
-   <date>2003-09-18</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>- Repaired 2 old method calls for add_root() and set_contents()
-- Added getElementsByTagName() (by Pierre)
-- Added a README.txt
-   </notes>
+   <date>2004-05-29</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fixed XML_Tree::isValidName() when adding a CDATA childNode.
+Dependencies like XML_DTD should now work again.</notes>
+  </release>
+  <release>
+   <version>
+    <release>2.0.0RC3</release>
+    <api>2.0.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2009-09-27</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>QA Release
+Redid package structure
+Updated to package 2.0</notes>
   </release>
  </changelog>
 </package>
