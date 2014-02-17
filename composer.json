@@ -1,0 +1,41 @@
+{
+    "authors": [
+        {
+            "email": "bernd@php.net",
+            "name": "Bernd R\u00f6mer",
+            "role": "Lead"
+        },
+        {
+            "email": "cox@idecnet.com",
+            "name": "Tomas V.V.Cox",
+            "role": "Lead"
+        },
+        {
+            "email": "davey@php.net",
+            "name": "Davey Shafik",
+            "role": "Lead"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "XML_Tree": "./"
+        }
+    },
+    "description": "More info available on: http://pear.php.net/package/XML_Tree",
+    "include-path": [
+        "./"
+    ],
+    "license": "PHP License",
+    "name": "pear/xml_tree",
+    "support": {
+        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=XML_Tree",
+        "source": "https://github.com/pear/XML_Tree"
+    },
+    "type": "library",
+    "require": {
+        "pear/pear_exception": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
+}
